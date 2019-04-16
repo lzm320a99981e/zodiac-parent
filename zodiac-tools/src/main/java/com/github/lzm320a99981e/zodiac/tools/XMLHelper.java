@@ -58,7 +58,7 @@ public abstract class XMLHelper {
     /**
      * 初始化别名注解
      *
-     * @param root
+     * @param root 跟节点对象
      * @see XStreamAlias
      */
     private static void initializationAliasAnnotation(Object root) {
@@ -82,10 +82,10 @@ public abstract class XMLHelper {
     /**
      * XML 解析为 对象
      *
-     * @param xml
-     * @param type
-     * @param <T>
-     * @return
+     * @param xml  XML
+     * @param type 解析对象类型
+     * @param <T>  返回解析后的类型
+     * @return 返回解析后的对象
      */
     public static <T> T parse(String xml, Class<T> type) {
         final T t = newInstance(type);
@@ -96,8 +96,8 @@ public abstract class XMLHelper {
     /**
      * XML 解析为 对象
      *
-     * @param xml
-     * @param root
+     * @param xml  XML
+     * @param root 根节点对象
      */
     public static void parse(String xml, Object root) {
         initializationAliasAnnotation(root);
@@ -107,8 +107,8 @@ public abstract class XMLHelper {
     /**
      * 对象 解析为 XML
      *
-     * @param root
-     * @return
+     * @param root 根节点对象
+     * @return 转换后的XML
      */
     public static String format(Object root) {
         initializationAliasAnnotation(root);

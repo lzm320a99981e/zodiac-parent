@@ -193,22 +193,17 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
-                <version>${maven-source-plugin.version}</version>
-                <configuration>
-                    <!-- 导入pom文件 -->
-                    <includePom>true</includePom>
-                    <!-- 每次都重新创 -->
-                    <forceCreation>true</forceCreation>
-                </configuration>
                 <executions>
                     <execution>
-                        <id>jar-no-fork</id>
-                        <phase>install</phase>
+                        <id>attach-sources</id>
                         <goals>
                             <goal>jar-no-fork</goal>
                         </goals>
                     </execution>
                 </executions>
+                <configuration>
+                    <attach>true</attach>
+                </configuration>
             </plugin>
             <!-- 文档 -->
             <plugin>
@@ -256,7 +251,6 @@
                             <attach>true</attach>
                         </configuration>
                     </plugin>
-
                     <!-- javadoc -->
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
@@ -271,7 +265,6 @@
                             </execution>
                         </executions>
                     </plugin>
-
                     <!-- gpg -->
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
