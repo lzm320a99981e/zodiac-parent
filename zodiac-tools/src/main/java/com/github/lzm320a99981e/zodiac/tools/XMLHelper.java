@@ -14,7 +14,7 @@ import java.io.Writer;
 /**
  * XML与对象之间的转换
  */
-public class XMLHelper {
+public abstract class XMLHelper {
     private static XStream xStream;
     private static final String CDATA_PREFIX = "<![CDATA[";
     private static final String CDATA_SUFFIX = "]]>";

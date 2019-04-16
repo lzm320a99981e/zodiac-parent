@@ -2,34 +2,53 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>zodiac-parent</artifactId>
+        <groupId>com.github.lzm320a99981e</groupId>
+        <version>1.0</version>
+    </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.github.lzm320a99981e</groupId>
     <artifactId>zodiac-tools</artifactId>
-    <version>1.0</version>
+    <name>zodiac-tools</name>
+    <url>https://github.com/lzm320a99981e/zodiac</url>
+    <description>zodiac tools</description>
 
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>com.github.lzm320a99981e</groupId>
-                <artifactId>zodiac-dependencies</artifactId>
-                <version>1.0</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
+    <!-- 许可证 -->
+    <licenses>
+        <license>
+            <name>The Apache Software License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+        </license>
+    </licenses>
+    <!-- 开发者 -->
+    <developers>
+        <developer>
+            <name>lzm320a99981e</name>
+            <email>lzm320a99981e@gmail.com</email>
+        </developer>
+    </developers>
+    <!-- 软件配置管理 -->
+    <scm>
+        <connection>scm:git@github.com:lzm320a99981e/zodiac.git</connection>
+        <developerConnection>scm:git@github.com:lzm320a99981e/zodiac.git</developerConnection>
+        <url>https://github.com/lzm320a99981e/zodiac</url>
+    </scm>
 
     <dependencies>
+        <!-- test -->
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
+            <version>4.12</version>
+            <scope>test</scope>
         </dependency>
 
         <!-- cache -->
         <dependency>
             <groupId>com.github.ben-manes.caffeine</groupId>
             <artifactId>caffeine</artifactId>
+            <version>2.7.0</version>
             <exclusions>
                 <exclusion>
                     <groupId>com.google.guava</groupId>
@@ -56,47 +75,56 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
+            <version>1.18.6</version>
             <scope>provided</scope>
         </dependency>
 
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
+            <version>27.1-jre</version>
         </dependency>
 
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
+            <version>2.9.8</version>
         </dependency>
 
         <dependency>
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
+            <version>2.8.5</version>
         </dependency>
 
         <dependency>
             <groupId>com.alibaba</groupId>
             <artifactId>fastjson</artifactId>
+            <version>1.2.57</version>
         </dependency>
 
         <dependency>
             <groupId>com.thoughtworks.xstream</groupId>
             <artifactId>xstream</artifactId>
+            <version>1.4.11.1</version>
         </dependency>
 
         <dependency>
             <groupId>org.jsoup</groupId>
             <artifactId>jsoup</artifactId>
+            <version>1.11.3</version>
         </dependency>
 
         <dependency>
             <groupId>org.bouncycastle</groupId>
             <artifactId>bcprov-jdk15on</artifactId>
+            <version>1.61</version>
         </dependency>
 
         <dependency>
             <groupId>joda-time</groupId>
             <artifactId>joda-time</artifactId>
+            <version>2.10.1</version>
         </dependency>
     </dependencies>
 
