@@ -6,8 +6,11 @@ import com.alibaba.fastjson.JSONObject;
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * 表达式解析器
@@ -58,7 +61,7 @@ public class ExpressionParser {
                 }
             }
             // 集合
-            if (json.startsWith("[") && "^0|(\\+)?[1-9]+[0-9]*$".matches(exp)) {
+            if (json.startsWith("[") && exp.matches("^0|(\\+)?[1-9]+[0-9]*$")) {
                 JSONArray jsonArray = JSON.parseArray(json);
                 int index = Integer.parseInt(exp);
                 if (jsonArray.size() > index) {
@@ -86,6 +89,25 @@ public class ExpressionParser {
         String newSeparator = "__" + UUID.randomUUID().toString().replace("-", "") + "__";
         // 重新组装和拆分表达式
         String newExpressions = Joiner.on(newSeparator).join(items).replace("\\" + newSeparator, separator);
-        return Splitter.on(newSeparator).splitToList(newExpressions);
+
+        final List<String> expressions = new ArrayList<>();
+        final List<String> newItems = Splitter.on(newSeparator).splitToList(newExpressions);
+        final Pattern arrayPattern = Pattern.compile("\\[\\d+]");
+
+        for (String newItem : newItems) {
+            // 数组匹配
+            if (!newItem.matches(".+\\[\\d+]$")) {
+                expressions.add(newItem);
+                continue;
+            }
+            // 数组表达式拆分
+            expressions.add(newItem.substring(0, newItem.indexOf("[")));
+            final Matcher matcher = arrayPattern.matcher(newItem);
+            while (matcher.find()) {
+                expressions.add(matcher.group().replace("[", "").replace("]", ""));
+            }
+        }
+
+        return expressions;
     }
 }
