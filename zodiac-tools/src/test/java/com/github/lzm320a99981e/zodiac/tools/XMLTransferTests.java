@@ -15,14 +15,14 @@ import java.util.List;
 import java.util.Objects;
 
 @Slf4j
-public class XMLHelperTests {
+public class XMLTransferTests {
     @Test
     public void test() {
-        final XMLHelper xmlHelper = XMLHelper.newInstance();
+        final XMLTransfer xmlTransfer = XMLTransfer.create();
         final Bean bean = createBean();
-        final String xml = xmlHelper.toXML(bean);
+        final String xml = xmlTransfer.toXML(bean);
         log.info("bean to xml -> \n{}", xml);
-        final Bean parse = xmlHelper.fromXML(xml, Bean.class);
+        final Bean parse = xmlTransfer.fromXML(xml, Bean.class);
         log.info("xml to bean -> \n{}", JSON.toJSONString(parse, true));
         assert Objects.equals(bean, parse);
     }

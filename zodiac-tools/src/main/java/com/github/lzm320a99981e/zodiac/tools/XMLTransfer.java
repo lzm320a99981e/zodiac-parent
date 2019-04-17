@@ -19,8 +19,7 @@ import java.util.regex.Pattern;
 /**
  * XML与对象之间的转换
  */
-public class XMLHelper {
-    //    private static XStream xStream;
+public class XMLTransfer {
     private static final String CDATA_PREFIX = "<![CDATA[";
     private static final String CDATA_SUFFIX = "]]>";
     private static HierarchicalStreamDriver driver;
@@ -63,8 +62,8 @@ public class XMLHelper {
      *
      * @return
      */
-    public static XMLHelper newInstance() {
-        final XMLHelper instance = new XMLHelper();
+    public static XMLTransfer create() {
+        final XMLTransfer instance = new XMLTransfer();
         instance.xStream = new XStream(driver);
         // 自动注解识别
         instance.xStream.autodetectAnnotations(true);
@@ -80,7 +79,7 @@ public class XMLHelper {
      * @param cls
      * @return
      */
-    public XMLHelper aliasClass(String alias, Class cls) {
+    public XMLTransfer aliasClass(String alias, Class cls) {
         this.xStream.alias(alias, cls);
         return this;
     }
@@ -92,7 +91,7 @@ public class XMLHelper {
      * @param type
      * @return
      */
-    public XMLHelper aliasType(String alias, Class type) {
+    public XMLTransfer aliasType(String alias, Class type) {
         this.xStream.aliasType(alias, type);
         return this;
     }
@@ -105,7 +104,7 @@ public class XMLHelper {
      * @param definedIn
      * @return
      */
-    public XMLHelper aliasField(String field, String alias, Class definedIn) {
+    public XMLTransfer aliasField(String field, String alias, Class definedIn) {
         this.xStream.aliasField(alias, definedIn, field);
         return this;
     }
@@ -117,7 +116,7 @@ public class XMLHelper {
      * @param definedIn
      * @return
      */
-    public XMLHelper attribute(String field, Class definedIn) {
+    public XMLTransfer attribute(String field, Class definedIn) {
         this.xStream.useAttributeFor(definedIn, field);
         return this;
     }
@@ -129,7 +128,7 @@ public class XMLHelper {
      * @param alias
      * @return
      */
-    public XMLHelper aliasAttribute(String attribute, String alias) {
+    public XMLTransfer aliasAttribute(String attribute, String alias) {
         this.xStream.aliasAttribute(attribute, alias);
         return this;
     }
@@ -142,7 +141,7 @@ public class XMLHelper {
      * @param definedIn
      * @return
      */
-    public XMLHelper aliasAttribute(String attribute, String alias, Class definedIn) {
+    public XMLTransfer aliasAttribute(String attribute, String alias, Class definedIn) {
         this.xStream.aliasAttribute(definedIn, attribute, alias);
         return this;
     }
@@ -154,7 +153,7 @@ public class XMLHelper {
      * @param definedIn
      * @return
      */
-    public XMLHelper ignoreField(String field, Class definedIn) {
+    public XMLTransfer ignoreField(String field, Class definedIn) {
         this.xStream.omitField(definedIn, field);
         return this;
     }
@@ -164,7 +163,7 @@ public class XMLHelper {
      *
      * @return
      */
-    public XMLHelper ignoreUnknownElements() {
+    public XMLTransfer ignoreUnknownElements() {
         this.xStream.ignoreUnknownElements();
         return this;
     }
@@ -175,7 +174,7 @@ public class XMLHelper {
      * @param pattern
      * @return
      */
-    public XMLHelper ignoreUnknownElements(String pattern) {
+    public XMLTransfer ignoreUnknownElements(String pattern) {
         this.xStream.ignoreUnknownElements(pattern);
         return this;
     }
@@ -186,7 +185,7 @@ public class XMLHelper {
      * @param pattern
      * @return
      */
-    public XMLHelper ignoreUnknownElements(Pattern pattern) {
+    public XMLTransfer ignoreUnknownElements(Pattern pattern) {
         this.xStream.ignoreUnknownElements(pattern);
         return this;
     }
@@ -197,7 +196,7 @@ public class XMLHelper {
      * @param mode true:自动识别注解，false:不自动识别注解
      * @return
      */
-    public XMLHelper autodetectAnnotations(boolean mode) {
+    public XMLTransfer autodetectAnnotations(boolean mode) {
         this.xStream.autodetectAnnotations(mode);
         return this;
     }
@@ -208,7 +207,7 @@ public class XMLHelper {
      * @param pattern 日期格式
      * @return
      */
-    public XMLHelper dateFormat(String pattern) {
+    public XMLTransfer dateFormat(String pattern) {
         this.xStream.registerConverter(new DateConverter(pattern, null, null));
         return this;
     }
@@ -219,7 +218,7 @@ public class XMLHelper {
      * @param converter 类型转换器
      * @return
      */
-    public XMLHelper registerConverter(Converter converter) {
+    public XMLTransfer registerConverter(Converter converter) {
         this.xStream.registerConverter(converter);
         return this;
     }
@@ -244,7 +243,7 @@ public class XMLHelper {
      * @return
      */
     public <T> T fromXML(String xml, Class<T> type) {
-        final T root = newInstance(type);
+        final T root = create(type);
         setAliasFromExtends(type);
         this.xStream.fromXML(xml, root);
         return root;
@@ -288,7 +287,7 @@ public class XMLHelper {
      * @param <T>
      * @return
      */
-    private static <T> T newInstance(Class<T> type) {
+    private static <T> T create(Class<T> type) {
         try {
             return type.newInstance();
         } catch (Exception e) {
