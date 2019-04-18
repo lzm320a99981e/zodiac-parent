@@ -27,4 +27,6 @@ gpg --output zodiac_sec.gpg --armor --export-secret-key 6D227BD0684D0478818AF365
 gpg --import zodiac_pub.gpg
 导入私钥
 gpg --allow-secret-key-import --import zodiac_sec.gpg
+
+zodiac-compnent-parent
 ```
