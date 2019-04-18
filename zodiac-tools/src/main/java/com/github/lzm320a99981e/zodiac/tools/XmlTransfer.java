@@ -19,7 +19,7 @@ import java.util.regex.Pattern;
 /**
  * XML与对象之间的转换
  */
-public class XMLTransfer {
+public class XmlTransfer {
     private static final String CDATA_PREFIX = "<![CDATA[";
     private static final String CDATA_SUFFIX = "]]>";
     private static HierarchicalStreamDriver driver;
@@ -62,8 +62,8 @@ public class XMLTransfer {
      *
      * @return
      */
-    public static XMLTransfer create() {
-        final XMLTransfer instance = new XMLTransfer();
+    public static XmlTransfer create() {
+        final XmlTransfer instance = new XmlTransfer();
         instance.xStream = new XStream(driver);
         // 自动注解识别
         instance.xStream.autodetectAnnotations(true);
@@ -79,7 +79,7 @@ public class XMLTransfer {
      * @param cls
      * @return
      */
-    public XMLTransfer aliasClass(String alias, Class cls) {
+    public XmlTransfer aliasClass(String alias, Class cls) {
         this.xStream.alias(alias, cls);
         return this;
     }
@@ -91,7 +91,7 @@ public class XMLTransfer {
      * @param type
      * @return
      */
-    public XMLTransfer aliasType(String alias, Class type) {
+    public XmlTransfer aliasType(String alias, Class type) {
         this.xStream.aliasType(alias, type);
         return this;
     }
@@ -104,7 +104,7 @@ public class XMLTransfer {
      * @param definedIn
      * @return
      */
-    public XMLTransfer aliasField(String field, String alias, Class definedIn) {
+    public XmlTransfer aliasField(String field, String alias, Class definedIn) {
         this.xStream.aliasField(alias, definedIn, field);
         return this;
     }
@@ -116,7 +116,7 @@ public class XMLTransfer {
      * @param definedIn
      * @return
      */
-    public XMLTransfer attribute(String field, Class definedIn) {
+    public XmlTransfer attribute(String field, Class definedIn) {
         this.xStream.useAttributeFor(definedIn, field);
         return this;
     }
@@ -128,7 +128,7 @@ public class XMLTransfer {
      * @param alias
      * @return
      */
-    public XMLTransfer aliasAttribute(String attribute, String alias) {
+    public XmlTransfer aliasAttribute(String attribute, String alias) {
         this.xStream.aliasAttribute(attribute, alias);
         return this;
     }
@@ -141,7 +141,7 @@ public class XMLTransfer {
      * @param definedIn
      * @return
      */
-    public XMLTransfer aliasAttribute(String attribute, String alias, Class definedIn) {
+    public XmlTransfer aliasAttribute(String attribute, String alias, Class definedIn) {
         this.xStream.aliasAttribute(definedIn, attribute, alias);
         return this;
     }
@@ -153,7 +153,7 @@ public class XMLTransfer {
      * @param definedIn
      * @return
      */
-    public XMLTransfer ignoreField(String field, Class definedIn) {
+    public XmlTransfer ignoreField(String field, Class definedIn) {
         this.xStream.omitField(definedIn, field);
         return this;
     }
@@ -163,7 +163,7 @@ public class XMLTransfer {
      *
      * @return
      */
-    public XMLTransfer ignoreUnknownElements() {
+    public XmlTransfer ignoreUnknownElements() {
         this.xStream.ignoreUnknownElements();
         return this;
     }
@@ -174,7 +174,7 @@ public class XMLTransfer {
      * @param pattern
      * @return
      */
-    public XMLTransfer ignoreUnknownElements(String pattern) {
+    public XmlTransfer ignoreUnknownElements(String pattern) {
         this.xStream.ignoreUnknownElements(pattern);
         return this;
     }
@@ -185,7 +185,7 @@ public class XMLTransfer {
      * @param pattern
      * @return
      */
-    public XMLTransfer ignoreUnknownElements(Pattern pattern) {
+    public XmlTransfer ignoreUnknownElements(Pattern pattern) {
         this.xStream.ignoreUnknownElements(pattern);
         return this;
     }
@@ -196,7 +196,7 @@ public class XMLTransfer {
      * @param mode true:自动识别注解，false:不自动识别注解
      * @return
      */
-    public XMLTransfer autodetectAnnotations(boolean mode) {
+    public XmlTransfer autodetectAnnotations(boolean mode) {
         this.xStream.autodetectAnnotations(mode);
         return this;
     }
@@ -207,7 +207,7 @@ public class XMLTransfer {
      * @param pattern 日期格式
      * @return
      */
-    public XMLTransfer dateFormat(String pattern) {
+    public XmlTransfer dateFormat(String pattern) {
         this.xStream.registerConverter(new DateConverter(pattern, null, null));
         return this;
     }
@@ -218,7 +218,7 @@ public class XMLTransfer {
      * @param converter 类型转换器
      * @return
      */
-    public XMLTransfer registerConverter(Converter converter) {
+    public XmlTransfer registerConverter(Converter converter) {
         this.xStream.registerConverter(converter);
         return this;
     }

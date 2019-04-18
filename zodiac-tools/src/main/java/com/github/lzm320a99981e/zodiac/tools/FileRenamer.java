@@ -154,7 +154,7 @@ public class FileRenamer {
             // 复制内容
             Files.write(target.toPath(), content.getBytes(StandardCharsets.UTF_8));
         } catch (IOException e) {
-            throw ExceptionUtils.wrappedRuntimeException(e);
+            throw ExceptionHelper.wrappedRuntimeException(e);
         }
 
     }

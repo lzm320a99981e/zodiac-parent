@@ -3,7 +3,7 @@ package com.github.lzm320a99981e.zodiac.tools;
 /**
  * 异常辅助类
  */
-public class ExceptionUtils {
+public class ExceptionHelper {
     /**
      * 包装运行时异常
      *

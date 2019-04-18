@@ -15,10 +15,10 @@ import java.util.List;
 import java.util.Objects;
 
 @Slf4j
-public class XMLTransferTests {
+public class XmlTransferTests {
     @Test
     public void test() {
-        final XMLTransfer xmlTransfer = XMLTransfer.create();
+        final XmlTransfer xmlTransfer = XmlTransfer.create();
         final Bean bean = createBean();
         final String xml = xmlTransfer.toXML(bean);
         log.info("bean to xml -> \n{}", xml);
