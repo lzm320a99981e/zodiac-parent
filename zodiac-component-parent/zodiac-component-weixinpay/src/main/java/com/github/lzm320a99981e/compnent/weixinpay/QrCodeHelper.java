@@ -15,7 +15,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * 二维码工具类
+ * 二维码工具类(TODO:迁移到 zodiac-tools 项目)
  */
 public class QrCodeHelper {
     @Builder

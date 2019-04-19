@@ -2,8 +2,7 @@ package com.github.lzm320a99981e.compnent.weixinpay;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.github.lzm320a99981e.compnent.weixinpay.dto.UnifiedorderRequest;
-import com.github.lzm320a99981e.compnent.weixinpay.dto.UnifiedorderResponse;
+import com.github.lzm320a99981e.compnent.weixinpay.dto.*;
 import com.github.lzm320a99981e.zodiac.tools.ExceptionHelper;
 import com.github.lzm320a99981e.zodiac.tools.IdGenerator;
 import com.github.lzm320a99981e.zodiac.tools.XmlTransfer;
@@ -59,6 +58,37 @@ public class WeixinPayApi {
         finalRequest.setSign(WeixinPayHelper.sign(finalRequest, properties.getApikey()));
         // 发起请求
         return doRequest(finalRequest, properties.getApiUrl().getUnifiedorder(), UnifiedorderResponse.class);
+    }
+
+
+    /**
+     * 查询订单
+     *
+     * @param request
+     * @return
+     */
+    public OrderqueryResponse orderquery(OrderqueryRequest request) {
+        // 设置公共参数
+        final OrderqueryRequest finalRequest = setCommons(request);
+        // 签名
+        finalRequest.setSign(WeixinPayHelper.sign(finalRequest, properties.getApikey()));
+        // 发起请求
+        return doRequest(finalRequest, properties.getApiUrl().getOrderquery(), OrderqueryResponse.class);
+    }
+
+    /**
+     * 关闭订单
+     *
+     * @param request
+     * @return
+     */
+    public CloseorderResponse closeorder(CloseorderRequest request) {
+        // 设置公共参数
+        final CloseorderRequest finalRequest = setCommons(request);
+        // 签名
+        finalRequest.setSign(WeixinPayHelper.sign(finalRequest, properties.getApikey()));
+        // 发起请求
+        return doRequest(finalRequest, properties.getApiUrl().getCloseorder(), CloseorderResponse.class);
     }
 
     /**
