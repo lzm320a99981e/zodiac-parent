@@ -14,5 +14,6 @@
 
     <modules>
         <module>zodiac-component-weixinpay</module>
+        <module>zodiac-compnent-office</module>
     </modules>
 </project>
