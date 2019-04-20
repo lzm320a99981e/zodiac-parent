@@ -1,4 +1,4 @@
-package com.github.lzm320a99981e.compnent.office;
+package com.github.lzm320a99981e.compnent.office.word;
 
 import org.apache.poi.xwpf.usermodel.XWPFParagraph;
 import org.apache.poi.xwpf.usermodel.XWPFRun;

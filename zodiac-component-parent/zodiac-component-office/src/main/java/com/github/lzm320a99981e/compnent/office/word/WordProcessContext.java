@@ -1,15 +1,29 @@
 package com.github.lzm320a99981e.compnent.office.word;
 
 import lombok.Data;
+import org.apache.poi.xwpf.usermodel.XWPFDocument;
+import org.apache.poi.xwpf.usermodel.XWPFParagraph;
+import org.apache.poi.xwpf.usermodel.XWPFTableCell;
+
+import java.util.Map;
 
 @Data
 public class WordProcessContext {
 
-    private DocType docType;
+    private DocContentType docContentType;
     private DataType dataType;
-    private String templateVariable;
+    private XWPFDocument template;
+    private XWPFParagraph paragraph;
+    private XWPFTableCell cell;
 
-    public enum DocType {
+
+    private String templateVariable;
+    private Object templateVariableValue;
+    private Map<String, Object> templateData;
+
+    private Exception exception;
+
+    public enum DocContentType {
         PARAGRAPH,
         TABLE
     }

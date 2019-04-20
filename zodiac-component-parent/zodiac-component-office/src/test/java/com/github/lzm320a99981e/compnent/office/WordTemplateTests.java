@@ -97,7 +97,7 @@ public class WordTemplateTests {
         File readFile = new File(resources, "EXAMPLE_EXPORT.docx");
         XWPFDocument document = new XWPFDocument(new FileInputStream(readFile));
 
-//        document.createParagraph().createRun().setText("少时诵诗书所所所所所多付绿扩军所绿多付");
+//        template.createParagraph().createRun().setText("少时诵诗书所所所所所多付绿扩军所绿多付");
 
         final List<XWPFParagraph> paragraphs = document.getParagraphs();
         for (XWPFParagraph paragraph : paragraphs) {

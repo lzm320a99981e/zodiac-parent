@@ -9,7 +9,7 @@ public interface WordProcessInterceptor {
      *
      * @return
      */
-    default boolean startProcessDocument() {
+    default boolean startProcessDocument(WordProcessContext context) {
         return true;
     }
 
@@ -18,22 +18,25 @@ public interface WordProcessInterceptor {
      *
      * @return
      */
-    default boolean beforeProcessVariable() {
+    default boolean beforeProcessVariable(WordProcessContext context) {
         return true;
     }
 
     /**
      * 处理变量后
      */
-    void afterProcessVariable();
+    default void afterProcessVariable(WordProcessContext context) {
+    }
 
     /**
      * 文档处理结束
      */
-    void endProcessDocument();
+    default void endProcessDocument(WordProcessContext context) {
+    }
 
     /**
      * 发生错误
      */
-    void failure();
+    default void onFailure(WordProcessContext context) {
+    }
 }
