@@ -40,6 +40,7 @@ public class WordTemplateTests {
     static final File resources = Paths.get(basePath, "src/test/resources").toFile();
 
 
+
     @Test
     public void testDoc() throws Exception {
         File readFile = new File(resources, "EXAMPLE_EXPORT.doc");
