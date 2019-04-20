@@ -1,6 +1,7 @@
 package com.github.lzm320a99981e.compnent.office.word;
 
 import com.alibaba.fastjson.JSON;
+import com.github.lzm320a99981e.zodiac.tools.ExceptionHelper;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.xwpf.usermodel.*;
@@ -30,14 +31,24 @@ public class WordTemplateProcessor {
         this.context = new WordProcessContext();
         this.context.setTemplate(template);
         this.context.setTemplateData(data);
-        // 文档处理开始
-        if (Objects.equals(false, doInterceptor(context, InterceptorPhase.START_PROCESS_DOCUMENT))) {
-            return;
+        try {
+            // 文档处理开始
+            if (Objects.equals(false, doInterceptor(context, InterceptorPhase.START_PROCESS_DOCUMENT))) {
+                return;
+            }
+
+            // 段落处理
+            template.getParagraphs().forEach(paragraph -> processParagraph(paragraph, data));
+            // 表格处理
+            template.getTables().forEach(table -> processTable(table, data));
+
+            // 文档处理结束
+            doInterceptor(context, InterceptorPhase.END_PROCESS_DOCUMENT);
+        } catch (Exception e) {
+            // 文档处理发生异常
+            context.setException(e);
+            doInterceptor(context, InterceptorPhase.ON_FAILURE);
         }
-        // 段落处理
-        template.getParagraphs().forEach(paragraph -> processParagraph(paragraph, data));
-        // 表格处理
-        template.getTables().forEach(table -> processTable(table, data));
     }
 
 
@@ -49,7 +60,7 @@ public class WordTemplateProcessor {
      * @return
      */
     private void processParagraph(XWPFParagraph paragraph, Map<String, Object> data) {
-        processParagraph(paragraph, data, 0);
+        processParagraph(null, paragraph, data, 0);
     }
 
     /**
@@ -94,7 +105,7 @@ public class WordTemplateProcessor {
         // 只有一行数据，覆盖模板行
         int dataSize = value.size();
         if (dataSize == 1) {
-            row.getTableCells().forEach(cell -> cell.getParagraphs().forEach(paragraph -> processParagraph(paragraph, data, 0)));
+            row.getTableCells().forEach(cell -> cell.getParagraphs().forEach(paragraph -> processParagraph(cell, paragraph, data, 0)));
             return;
         }
 
@@ -135,12 +146,12 @@ public class WordTemplateProcessor {
             WordHelper.copy(row, insertRow);
             // 数据是从第二条开始，第一条数据需要给模板行留着
             int finalDataIndex = dataIndex;
-            insertRow.getTableCells().forEach(cell -> cell.getParagraphs().forEach(paragraph -> processParagraph(paragraph, data, finalDataIndex)));
+            insertRow.getTableCells().forEach(cell -> cell.getParagraphs().forEach(paragraph -> processParagraph(cell, paragraph, data, finalDataIndex)));
             dataIndex++;
         }
         repeatHeadRowMap.get(headRowText).set(dataIndex);
 
-        row.getTableCells().forEach(cell -> cell.getParagraphs().forEach(paragraph -> processParagraph(paragraph, data, firstRowDataIndex)));
+        row.getTableCells().forEach(cell -> cell.getParagraphs().forEach(paragraph -> processParagraph(cell, paragraph, data, firstRowDataIndex)));
     }
 
     /**
@@ -212,7 +223,12 @@ public class WordTemplateProcessor {
      * @param data
      * @param collectionDataIndex 如果是处理表格里面的段落，需要知道使用集合里面的哪条数据
      */
-    private void processParagraph(XWPFParagraph paragraph, Map<String, Object> data, Integer collectionDataIndex) {
+    private void processParagraph(XWPFTableCell cell, XWPFParagraph paragraph, Map<String, Object> data, Integer collectionDataIndex) {
+        this.context.setParagraph(paragraph);
+        if (Objects.nonNull(cell)) {
+            this.context.setCell(cell);
+        }
+
         final List<XWPFRun> runs = paragraph.getRuns();
         if (runs.isEmpty()) {
             return;
@@ -367,6 +383,9 @@ public class WordTemplateProcessor {
         if (Objects.isNull(this.interceptor)) {
             if (phase == InterceptorPhase.START_PROCESS_DOCUMENT || phase == InterceptorPhase.BEFORE_PROCESS_VARIABLE) {
                 return true;
+            }
+            if (phase == InterceptorPhase.ON_FAILURE) {
+                ExceptionHelper.rethrowRuntimeException(context.getException());
             }
             return null;
         }
