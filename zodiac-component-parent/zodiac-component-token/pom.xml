@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>zodiac-compnent-parent</artifactId>
+        <groupId>com.github.lzm320a99981e</groupId>
+        <version>1.0</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>zodiac-compnent-token</artifactId>
+
+    <name>zodiac-component-token</name>
+    <url>https://github.com/lzm320a99981e/zodiac</url>
+    <description>zodiac component token</description>
+
+    <!-- 许可证 -->
+    <licenses>
+        <license>
+            <name>The Apache Software License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+        </license>
+    </licenses>
+    <!-- 开发者 -->
+    <developers>
+        <developer>
+            <name>lzm320a99981e</name>
+            <email>lzm320a99981e@gmail.com</email>
+        </developer>
+    </developers>
+    <!-- 软件配置管理 -->
+    <scm>
+        <connection>scm:git@github.com:lzm320a99981e/zodiac.git</connection>
+        <developerConnection>scm:git@github.com:lzm320a99981e/zodiac.git</developerConnection>
+        <url>https://github.com/lzm320a99981e/zodiac</url>
+    </scm>
+    <dependencies>
+        <dependency>
+            <groupId>com.github.lzm320a99981e</groupId>
+            <artifactId>zodiac-tools</artifactId>
+            <version>1.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt</artifactId>
+        </dependency>
+    </dependencies>
+</project>
