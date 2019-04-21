@@ -5,8 +5,8 @@ import lombok.Data;
 
 /**
  * 接口名称：支付结果通知(返回参数)
- * 接口地址：@see <a href="支付结果通知-接口地址">https://pay.weixin.qq.com/wxpay/pay.action”</a>
- * 接口文档：@see <a href="支付结果通知-接口文档">https://pay.weixin.qq.com/wiki/doc/api/native.php?chapter=9_7&index=8</a>
+ * 接口地址：@see <a href="https://pay.weixin.qq.com/wxpay/pay.action">支付结果通知-接口地址</a>
+ * 接口文档：@see <a href="https://pay.weixin.qq.com/wiki/doc/api/native.php?chapter=9_7&index=8">支付结果通知-接口文档</a>
  */
 @XStreamAlias("xml")
 @Data

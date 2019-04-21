@@ -5,8 +5,8 @@ import lombok.Data;
 
 /**
  * 接口名称：统一下单(请求参数)
- * 接口地址：@see <a href="统一下单-接口地址">https://api.mch.weixin.qq.com/pay/unifiedorder</a>
- * 接口文档：@see <a href="统一下单-接口文档">https://pay.weixin.qq.com/wiki/doc/api/native.php?chapter=9_1</a>
+ * 接口地址：@see <a href="https://api.mch.weixin.qq.com/pay/unifiedorder">统一下单-接口地址</a>
+ * 接口文档：@see <a href="https://pay.weixin.qq.com/wiki/doc/api/native.php?chapter=9_1">统一下单-接口文档</a>
  */
 @XStreamAlias("xml")
 @Data
@@ -80,7 +80,7 @@ public class UnifiedorderRequest {
      * "必填":"否",
      * "类型":"String(6000)",
      * "示例值":"",
-     * "描述":"商品详细描述，对于使用单品优惠的商户，改字段必须按照规范上传，详见“单品优惠参数说明”"
+     * "描述":"商品详细描述，对于使用单品优惠的商户，改字段必须按照规范上传，详见“单品优惠参数说明"
      */
     private String detail;
     /**

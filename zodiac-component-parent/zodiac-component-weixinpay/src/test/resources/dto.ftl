@@ -3,8 +3,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 import lombok.Data;
 /**
 * 接口名称：${name}(${type})
-* 接口地址：@see <a href="${name}-接口地址">${url!}</a>
-* 接口文档：@see <a href="${name}-接口文档">${documentUrl}</a>
+* 接口地址：@see <a href="${url!}">${name}-接口地址</a>
+* 接口文档：@see <a href="${documentUrl}">${name}-接口文档</a>
 */
 @XStreamAlias("xml")
 @Data

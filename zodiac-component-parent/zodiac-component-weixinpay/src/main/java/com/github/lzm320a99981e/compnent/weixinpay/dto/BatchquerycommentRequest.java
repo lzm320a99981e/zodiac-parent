@@ -5,8 +5,8 @@ import lombok.Data;
 
 /**
  * 接口名称：拉取订单评价数据(请求参数)
- * 接口地址：@see <a href="拉取订单评价数据-接口地址">https://api.mch.weixin.qq.com/billcommentsp/batchquerycomment</a>
- * 接口文档：@see <a href="拉取订单评价数据-接口文档">https://pay.weixin.qq.com/wiki/doc/api/native.php?chapter=9_17&index=12</a>
+ * 接口地址：@see <a href="https://api.mch.weixin.qq.com/billcommentsp/batchquerycomment">拉取订单评价数据-接口地址</a>
+ * 接口文档：@see <a href="https://pay.weixin.qq.com/wiki/doc/api/native.php?chapter=9_17&index=12">拉取订单评价数据-接口文档</a>
  */
 @XStreamAlias("xml")
 @Data

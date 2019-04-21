@@ -5,8 +5,8 @@ import lombok.Data;
 
 /**
  * 接口名称：关闭订单(请求参数)
- * 接口地址：@see <a href="关闭订单-接口地址">https://api.mch.weixin.qq.com/pay/closeorder</a>
- * 接口文档：@see <a href="关闭订单-接口文档">https://pay.weixin.qq.com/wiki/doc/api/native.php?chapter=9_3</a>
+ * 接口地址：@see <a href="https://api.mch.weixin.qq.com/pay/closeorder">关闭订单-接口地址</a>
+ * 接口文档：@see <a href="https://pay.weixin.qq.com/wiki/doc/api/native.php?chapter=9_3">关闭订单-接口文档</a>
  */
 @XStreamAlias("xml")
 @Data

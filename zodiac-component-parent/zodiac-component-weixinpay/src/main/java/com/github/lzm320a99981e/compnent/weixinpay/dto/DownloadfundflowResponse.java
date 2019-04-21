@@ -5,8 +5,8 @@ import lombok.Data;
 
 /**
  * 接口名称：下载资金账单(返回结果)
- * 接口地址：@see <a href="下载资金账单-接口地址">https://api.mch.weixin.qq.com/pay/downloadfundflow</a>
- * 接口文档：@see <a href="下载资金账单-接口文档">https://pay.weixin.qq.com/wiki/doc/api/native.php?chapter=9_18&index=7</a>
+ * 接口地址：@see <a href="https://api.mch.weixin.qq.com/pay/downloadfundflow">下载资金账单-接口地址</a>
+ * 接口文档：@see <a href="https://pay.weixin.qq.com/wiki/doc/api/native.php?chapter=9_18&index=7">下载资金账单-接口文档</a>
  */
 @XStreamAlias("xml")
 @Data

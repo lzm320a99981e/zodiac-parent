@@ -5,8 +5,8 @@ import lombok.Data;
 
 /**
  * 接口名称：申请退款(请求参数)
- * 接口地址：@see <a href="申请退款-接口地址">https://api.mch.weixin.qq.com/secapi/pay/refund</a>
- * 接口文档：@see <a href="申请退款-接口文档">https://pay.weixin.qq.com/wiki/doc/api/native.php?chapter=9_4</a>
+ * 接口地址：@see <a href="https://api.mch.weixin.qq.com/secapi/pay/refund">申请退款-接口地址</a>
+ * 接口文档：@see <a href="https://pay.weixin.qq.com/wiki/doc/api/native.php?chapter=9_4">申请退款-接口文档</a>
  */
 @XStreamAlias("xml")
 @Data

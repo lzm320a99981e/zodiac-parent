@@ -5,8 +5,8 @@ import lombok.Data;
 
 /**
  * 接口名称：交易保障(输入参数)
- * 接口地址：@see <a href="交易保障-接口地址">https://api.mch.weixin.qq.com/payitil/report</a>
- * 接口文档：@see <a href="交易保障-接口文档">https://pay.weixin.qq.com/wiki/doc/api/native.php?chapter=9_8&index=9</a>
+ * 接口地址：@see <a href="https://api.mch.weixin.qq.com/payitil/report">交易保障-接口地址</a>
+ * 接口文档：@see <a href="https://pay.weixin.qq.com/wiki/doc/api/native.php?chapter=9_8&index=9">交易保障-接口文档</a>
  */
 @XStreamAlias("xml")
 @Data

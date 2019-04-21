@@ -5,8 +5,8 @@ import lombok.Data;
 
 /**
  * 接口名称：查询订单(是否需要证书)
- * 接口地址：@see <a href="查询订单-接口地址">https://api.mch.weixin.qq.com/pay/orderquery</a>
- * 接口文档：@see <a href="查询订单-接口文档">https://pay.weixin.qq.com/wiki/doc/api/native.php?chapter=9_2</a>
+ * 接口地址：@see <a href="https://api.mch.weixin.qq.com/pay/orderquery">查询订单-接口地址</a>
+ * 接口文档：@see <a href="https://pay.weixin.qq.com/wiki/doc/api/native.php?chapter=9_2">查询订单-接口文档</a>
  */
 @XStreamAlias("xml")
 @Data
@@ -38,7 +38,6 @@ public class OrderqueryRequest {
      * "描述":"微信的订单号，建议优先使用"
      */
     private String transaction_id;
-
     /**
      * "字段名":"商户订单号",
      * "变量名":"out_trade_no",
@@ -48,7 +47,6 @@ public class OrderqueryRequest {
      * "描述":"商户系统内部订单号，要求32个字符内，只能是数字、大小写字母_-|*@ ，且在同一个商户号下唯一。 详见商户订单号"
      */
     private String out_trade_no;
-
     /**
      * "字段名":"随机字符串",
      * "变量名":"nonce_str",
