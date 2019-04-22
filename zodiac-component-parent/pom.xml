@@ -16,5 +16,6 @@
         <module>zodiac-component-weixinpay</module>
         <module>zodiac-component-office</module>
         <module>zodiac-component-token</module>
+        <module>zodiac-component-sms</module>
     </modules>
 </project>
