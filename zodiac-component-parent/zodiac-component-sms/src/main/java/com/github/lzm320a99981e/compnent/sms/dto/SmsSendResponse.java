@@ -13,7 +13,7 @@ public interface SmsSendResponse {
      *
      * @return
      */
-    default String getResponseText() {
+    default String responseText() {
         return JSON.toJSONString(this);
     }
 
@@ -32,7 +32,7 @@ public interface SmsSendResponse {
      * @return
      */
     default <T> T parseObject(Class<T> type) {
-        return JSON.parseObject(getResponseText(), type);
+        return JSON.parseObject(responseText(), type);
     }
 
     /**
@@ -43,6 +43,6 @@ public interface SmsSendResponse {
      * @return
      */
     default <T> List<T> parseArray(Class<T> type) {
-        return JSON.parseArray(getResponseText(), type);
+        return JSON.parseArray(responseText(), type);
     }
 }
