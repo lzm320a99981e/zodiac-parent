@@ -25,6 +25,7 @@ public class SmsApiTests {
 
         SmsApi smsApi = new MysubmailSmsApiAdapter(mysubmailSmsApi);
         final SmsSendRequest request = new SmsSendRequest();
+        request.setProvider(Provider.Mysubmail.name());
         request.setSignature("【GSPS】");
         request.setTemplate("{captcha}为您的登录验证码，请于5分钟内填写。如非本人操作，请忽略本短信。");
         request.setReceivers(Arrays.asList("13380384850"));
