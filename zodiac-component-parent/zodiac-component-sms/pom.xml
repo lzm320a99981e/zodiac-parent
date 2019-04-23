@@ -9,11 +9,11 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>zodiac-component-token</artifactId>
+    <artifactId>zodiac-component-sms</artifactId>
 
-    <name>zodiac-component-token</name>
+    <name>zodiac-component-sms</name>
     <url>https://github.com/lzm320a99981e/zodiac</url>
-    <description>zodiac component token</description>
+    <description>zodiac component sms</description>
 
     <!-- 许可证 -->
     <licenses>
@@ -42,6 +42,18 @@
             <version>1.0</version>
         </dependency>
         <dependency>
+            <groupId>com.squareup.retrofit2</groupId>
+            <artifactId>retrofit</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.squareup.retrofit2</groupId>
+            <artifactId>converter-gson</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.squareup.okhttp3</groupId>
+            <artifactId>okhttp</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <scope>provided</scope>
@@ -50,11 +62,6 @@
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>io.jsonwebtoken</groupId>
-            <artifactId>jjwt</artifactId>
         </dependency>
     </dependencies>
 </project>

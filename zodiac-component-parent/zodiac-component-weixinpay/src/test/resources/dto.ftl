@@ -1,4 +1,4 @@
-package com.github.lzm320a99981e.compnent.weixinpay.dto;
+package com.github.lzm320a99981e.component.weixinpay.dto;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import lombok.Data;
 /**

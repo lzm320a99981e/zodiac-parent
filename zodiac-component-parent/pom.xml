@@ -10,7 +10,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <packaging>pom</packaging>
-    <artifactId>zodiac-compnent-parent</artifactId>
+    <artifactId>zodiac-component-parent</artifactId>
 
     <modules>
         <module>zodiac-component-weixinpay</module>

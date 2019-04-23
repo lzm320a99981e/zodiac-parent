@@ -28,5 +28,5 @@ gpg --import zodiac_pub.gpg
 导入私钥
 gpg --allow-secret-key-import --import zodiac_sec.gpg
 
-zodiac-compnent-parent
+zodiac-component-parent
 ```
