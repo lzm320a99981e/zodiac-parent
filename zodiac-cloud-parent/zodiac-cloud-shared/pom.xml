@@ -7,10 +7,10 @@
         <groupId>com.github.lzm320a99981e</groupId>
         <version>1.0</version>
     </parent>
-    <artifactId>zodiac-cloud-registration</artifactId>
+    <artifactId>zodiac-cloud-shared</artifactId>
     <version>1.0</version>
-    <name>zodiac-cloud-registration</name>
-    <description>registration</description>
+    <name>zodiac-cloud-shared</name>
+    <description>cloud shared</description>
 
     <dependencyManagement>
         <dependencies>
@@ -26,8 +26,22 @@
 
     <dependencies>
         <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-redis</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-starter-netflix-eureka-server</artifactId>
+            <artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
