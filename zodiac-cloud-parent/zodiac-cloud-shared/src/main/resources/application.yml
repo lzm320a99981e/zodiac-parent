@@ -1,0 +1,74 @@
+
+################################## common options ######################################
+server:
+  port: 11010
+# spring
+spring:
+  profiles:
+    active: dev
+  application:
+    name: zodiac-cloud-shared
+  # \u56FD\u9645\u5316
+  messages:
+    basename: i18n/messages,i18n/validation/messages
+    encoding: UTF-8
+# log
+logging:
+  level:
+    com.yiqiao: debug
+  file: logs/${spring.application.name}.log
+# swagger
+swagger:
+  base-package: com.github.lzm320a99981e.cloud.shared
+  base-path: /**
+  exclude-path: /error
+# eureka
+eureka:
+  instance:
+    prefer-ip-address: true
+    hostname: ${spring.cloud.client.ip-address}
+    instance-id: ${spring.cloud.client.ip-address}:${server.port}
+    # \u5FC3\u8DF3\u95F4\u9694
+    lease-renewal-interval-in-seconds: 30
+    # \u5FC3\u8DF3\u8FC7\u671F
+    lease-expiration-duration-in-seconds: 90
+  client:
+    # \u5411\u670D\u52A1\u7AEF\u6CE8\u518C
+    fetch-registry: true
+    # \u5237\u65B0\u4F9D\u8D56\u7684\u670D\u52A1\u5217\u8868
+    registry-fetch-interval-seconds: 30
+    service-url:
+      defaultZone: http://127.0.0.1:10010/eureka/
+ribbon:
+  # \u5904\u7406\u8D85\u65F6\u65F6\u95F4
+  ConnectTimeout: 10000
+  # \u8FDE\u63A5\u8D85\u65F6\u65F6\u95F4
+  ReadTimeout: 10000
+  # \u8D1F\u8F7D\u65F6\u7684\u5B9E\u4F8B\u7F13\u5B58
+  ServerListRefreshInterval: 20000
+
+# \u81EA\u5B9A\u4E49
+custom:
+  starter:
+    # \u6821\u9A8C
+    validation:
+      check-error-code: 5000
+      check-error-message: invalid parameter [{0}]
+    # \u4EE4\u724C
+    token:
+      base64-encoded-secret-key: 12345678
+      expires-in: 7200
+      refresh-expires-in: 720000
+################################## profile options ######################################
+---
+spring:
+  profiles: dev
+################################## profile options ######################################
+---
+spring:
+  profiles: test
+################################## profile options ######################################
+---
+debug: false
+spring:
+  profiles: prod

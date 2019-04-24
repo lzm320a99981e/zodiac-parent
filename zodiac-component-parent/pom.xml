@@ -17,5 +17,6 @@
         <module>zodiac-component-office</module>
         <module>zodiac-component-token</module>
         <module>zodiac-component-sms</module>
+        <module>zodiac-component-validation</module>
     </modules>
 </project>

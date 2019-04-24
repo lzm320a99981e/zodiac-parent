@@ -43,7 +43,7 @@ public class TokenManager {
     private Integer accessTokenDurationInSeconds;
 
     /**
-     * 刷新令牌有效时间（单位：秒），需要大于有效令牌的有效时间
+     * 刷新令牌有效时间（单位：秒），一般会设置大于访问令牌的有效时间
      */
     @Setter
     private Integer refreshTokenDurationInSeconds;
