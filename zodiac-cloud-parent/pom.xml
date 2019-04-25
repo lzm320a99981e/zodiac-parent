@@ -12,6 +12,7 @@
     <packaging>pom</packaging>
     <modules>
         <module>zodiac-cloud-dependencies</module>
+        <module>zodiac-cloud-commons</module>
     </modules>
     <artifactId>zodiac-cloud-parent</artifactId>
 </project>

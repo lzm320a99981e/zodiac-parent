@@ -1,7 +1,7 @@
 
 ################################## common options ######################################
 server:
-  port: 11010
+  port: 30020
 # spring
 spring:
   profiles:
@@ -38,7 +38,7 @@ eureka:
     # \u5237\u65B0\u4F9D\u8D56\u7684\u670D\u52A1\u5217\u8868
     registry-fetch-interval-seconds: 30
     service-url:
-      defaultZone: http://127.0.0.1:10010/eureka/
+      defaultZone: http://127.0.0.1:30010/eureka/
 ribbon:
   # \u5904\u7406\u8D85\u65F6\u65F6\u95F4
   ConnectTimeout: 10000
