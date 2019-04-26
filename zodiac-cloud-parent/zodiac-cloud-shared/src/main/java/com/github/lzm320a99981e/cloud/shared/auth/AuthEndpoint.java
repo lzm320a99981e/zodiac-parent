@@ -23,4 +23,24 @@ public class AuthEndpoint {
         return response;
     }
 
+    @PostMapping("api/100")
+    public Object test3(@RequestBody JSONObject params) {
+        final HashMap<Object, Object> response = Maps.newHashMap();
+        response.put("name", "张三");
+        if (!params.containsKey("aa")) {
+            throw new ApiException(ApiResponse.error());
+        }
+        return response;
+    }
+
+    @PostMapping("200")
+    public Object test2(@RequestBody JSONObject params) {
+        final HashMap<Object, Object> response = Maps.newHashMap();
+        response.put("name", "张三");
+        if (!params.containsKey("aa")) {
+            throw new ApiException(ApiResponse.error());
+        }
+        return response;
+    }
+
 }

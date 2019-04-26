@@ -59,6 +59,12 @@ custom:
       base64-encoded-secret-key: 12345678
       expires-in: 7200
       refresh-expires-in: 720000
+
+customize:
+  content-caching-filter-bean:
+    name: sfffffffffffffff
+    order: 22
+
 ################################## profile options ######################################
 ---
 spring:
