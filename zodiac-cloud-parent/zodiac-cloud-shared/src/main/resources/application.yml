@@ -61,9 +61,9 @@ custom:
       refresh-expires-in: 720000
 
 customize:
-  content-caching-filter-bean:
-    name: sfffffffffffffff
-    order: 22
+  filter-interceptor-api:
+    enabled: true
+    url-patterns: ['/100','/api/200']
 
 ################################## profile options ######################################
 ---

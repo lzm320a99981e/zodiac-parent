@@ -9,7 +9,7 @@ import java.util.Map;
  * 自定义内容缓存过滤器Bean配置属性
  */
 @Data
-public class CustomizeContentCachingFilterBeanProperties {
+public class CustomizeFilterBeanProperties {
     private boolean enabled = true;
     private String name;
     private Integer order;

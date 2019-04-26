@@ -11,7 +11,16 @@ import java.util.Collections;
  * @see org.springframework.web.util.ContentCachingResponseWrapper
  * @see org.springframework.web.util.ContentCachingResponseWrapper
  */
-public interface CustomizeContentCachingFilterInterceptor {
+public interface CustomizeFilterInterceptor {
+    /**
+     * 是否启动拦截器
+     *
+     * @return {@code true} 启动 ${@code false} 禁用
+     */
+    default boolean isEnabled() {
+        return true;
+    }
+
     /**
      * 拦截路径匹配
      *
