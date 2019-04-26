@@ -31,6 +31,11 @@
             <version>1.0</version>
         </dependency>
         <dependency>
+            <groupId>com.github.lzm320a99981e</groupId>
+            <artifactId>zodiac-component-validation</artifactId>
+            <version>1.0</version>
+        </dependency>
+        <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>

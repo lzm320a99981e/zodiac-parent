@@ -35,6 +35,8 @@ public class ApiResponse {
      */
     private static final ApiResponse ERROR = ApiResponse.create("-1", "ERROR");
 
+    private static final ApiResponse invalidRequestParameter = ApiResponse.create("-1", "ERROR");
+
     public ApiResponse() {
     }
 
@@ -57,6 +59,10 @@ public class ApiResponse {
 
     public static ApiResponse error() {
         return ApiResponse.create(ERROR.getCode(), ERROR.getMessage());
+    }
+
+    public static ApiResponse invalidRequestParameter() {
+        return ApiResponse.create("5001", "invalid request parameter");
     }
 
     public ApiResponse data(Object data) {
