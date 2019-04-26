@@ -21,6 +21,9 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * 自定义Bean配置
+ */
 @Configuration
 public class CustomizeBeanConfiguration {
 
@@ -32,7 +35,7 @@ public class CustomizeBeanConfiguration {
 
     @Bean
     public ValidationExceptionHandler validationExceptionHandler(MessageSource messageSource) {
-        return new LocaleValidationExceptionHandler(messageSource, "5000","invalid parameter [{}]");
+        return new LocaleValidationExceptionHandler(messageSource, "5000", "invalid parameter [{}]");
     }
 
     @Bean

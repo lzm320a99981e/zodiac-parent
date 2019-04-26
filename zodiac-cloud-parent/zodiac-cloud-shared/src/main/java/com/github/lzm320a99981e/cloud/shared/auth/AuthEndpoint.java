@@ -1,8 +1,8 @@
 package com.github.lzm320a99981e.cloud.shared.auth;
 
 import com.alibaba.fastjson.JSONObject;
-import com.github.lzm320a99981e.cloud.shared.core.ApiException;
-import com.github.lzm320a99981e.cloud.shared.core.ApiResponse;
+import com.github.lzm320a99981e.cloud.commons.ApiException;
+import com.github.lzm320a99981e.cloud.commons.ApiResponse;
 import com.google.common.collect.Maps;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;

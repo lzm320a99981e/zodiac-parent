@@ -27,12 +27,7 @@
     <dependencies>
         <dependency>
             <groupId>com.github.lzm320a99981e</groupId>
-            <artifactId>zodiac-tools</artifactId>
-            <version>1.0</version>
-        </dependency>
-        <dependency>
-            <groupId>com.github.lzm320a99981e</groupId>
-            <artifactId>zodiac-component-validation</artifactId>
+            <artifactId>zodiac-cloud-commons</artifactId>
             <version>1.0</version>
         </dependency>
         <dependency>
