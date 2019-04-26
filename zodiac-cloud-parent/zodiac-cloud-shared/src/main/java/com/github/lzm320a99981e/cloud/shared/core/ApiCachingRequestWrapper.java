@@ -12,9 +12,18 @@ import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 
 public class ApiCachingRequestWrapper extends HttpServletRequestWrapper {
+    /**
+     * 从真实请求对象流里面读取出来的内容，都会被写入到缓存区
+     */
     private final ByteArrayOutputStream cached;
-    private ServletInputStream inputStream;
-    private BufferedReader reader;
+    /**
+     * 包装原始请求对象的字节输入流
+     */
+    private ServletInputStream wrappedInput;
+    /**
+     * 包装原始请求对象的字符输入流
+     */
+    private BufferedReader wrappedReader;
 
     /**
      * Constructs a request object wrapping the given request.
@@ -30,10 +39,10 @@ public class ApiCachingRequestWrapper extends HttpServletRequestWrapper {
 
     @Override
     public ServletInputStream getInputStream() throws IOException {
-        if (Objects.isNull(this.inputStream)) {
-            this.inputStream = new ApiCachingInputStream(getRequest().getInputStream());
+        if (Objects.isNull(this.wrappedInput)) {
+            this.wrappedInput = new ApiCachingInputStream(getRequest().getInputStream());
         }
-        return this.inputStream;
+        return this.wrappedInput;
     }
 
     @Override
@@ -44,10 +53,10 @@ public class ApiCachingRequestWrapper extends HttpServletRequestWrapper {
 
     @Override
     public BufferedReader getReader() throws IOException {
-        if (Objects.isNull(this.reader)) {
-            this.reader = new BufferedReader(new InputStreamReader(getInputStream(), getCharacterEncoding()));
+        if (Objects.isNull(this.wrappedReader)) {
+            this.wrappedReader = new BufferedReader(new InputStreamReader(getInputStream(), getCharacterEncoding()));
         }
-        return this.reader;
+        return this.wrappedReader;
     }
 
     /**

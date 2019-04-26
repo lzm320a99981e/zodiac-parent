@@ -1,6 +1,8 @@
 package com.github.lzm320a99981e.cloud.shared.auth;
 
 import com.alibaba.fastjson.JSONObject;
+import com.github.lzm320a99981e.cloud.shared.core.ApiException;
+import com.github.lzm320a99981e.cloud.shared.core.ApiResponse;
 import com.google.common.collect.Maps;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -15,6 +17,9 @@ public class AuthEndpoint {
     public Object test1(@RequestBody JSONObject params) {
         final HashMap<Object, Object> response = Maps.newHashMap();
         response.put("name", "张三");
+        if (!params.containsKey("aa")) {
+            throw new ApiException(ApiResponse.error());
+        }
         return response;
     }
 

@@ -15,7 +15,7 @@ spring:
 # log
 logging:
   level:
-    com.yiqiao: debug
+    com.github.lzm320a99981e: debug
   file: logs/${spring.application.name}.log
 # swagger
 swagger:
@@ -49,6 +49,7 @@ ribbon:
 
 # \u81EA\u5B9A\u4E49
 custom:
+  global-exception-base-packages: 'com.github.lzm320a99981e.cloud.shared'
   starter:
     # \u6821\u9A8C
     validation:

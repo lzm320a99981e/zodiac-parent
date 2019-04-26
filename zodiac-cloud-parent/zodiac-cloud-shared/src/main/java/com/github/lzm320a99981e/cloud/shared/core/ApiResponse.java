@@ -28,12 +28,12 @@ public class ApiResponse {
     /**
      * 成功响应信息
      */
-    private static final ApiResponse SUCCESS = ApiResponse.create("200", "OK");
+    private static final ApiResponse SUCCESS = ApiResponse.create("0", "OK");
 
     /**
      * 系统错误响应信息
      */
-    private static final ApiResponse ERROR = ApiResponse.create("500", "ERROR");
+    private static final ApiResponse ERROR = ApiResponse.create("-1", "ERROR");
 
     public ApiResponse() {
     }
