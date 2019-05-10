@@ -63,7 +63,7 @@ custom:
 customize:
   filter-interceptor-api:
     enabled: true
-    url-patterns: ['/100','/api/200']
+    url-patterns: ['/100','/api/200','/user/*']
 
 ################################## profile options ######################################
 ---

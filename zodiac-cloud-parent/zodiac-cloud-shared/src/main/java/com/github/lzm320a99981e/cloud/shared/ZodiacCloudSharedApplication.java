@@ -7,7 +7,7 @@ import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
 
 @EnableSwagger2Doc
 @EnableEurekaClient
-@SpringBootApplication
+@SpringBootApplication(scanBasePackages = "com.github.lzm320a99981e.cloud")
 public class ZodiacCloudSharedApplication {
 
     public static void main(String[] args) {

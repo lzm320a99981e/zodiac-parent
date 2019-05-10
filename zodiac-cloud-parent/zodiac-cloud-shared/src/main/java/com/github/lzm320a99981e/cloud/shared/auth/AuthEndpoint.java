@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.github.lzm320a99981e.cloud.commons.ApiException;
 import com.github.lzm320a99981e.cloud.commons.ApiResponse;
 import com.google.common.collect.Maps;
+import lombok.Data;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -41,6 +42,17 @@ public class AuthEndpoint {
             throw new ApiException(ApiResponse.error());
         }
         return response;
+    }
+
+    @PostMapping("user/login")
+    public Object test2(@RequestBody UserLogin userLogin) {
+        return userLogin;
+    }
+
+    @Data
+    public static class UserLogin {
+        private String username;
+        private String password;
     }
 
 }
