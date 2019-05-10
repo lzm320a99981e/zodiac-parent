@@ -7,6 +7,8 @@ import com.github.lzm320a99981e.cloud.shared.endpoint.auth.dto.VerifyTokenReques
 import com.github.lzm320a99981e.component.token.Token;
 import com.github.lzm320a99981e.component.token.TokenException;
 import com.github.lzm320a99981e.component.token.TokenManager;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -17,6 +19,7 @@ import java.util.Map;
 /**
  * 认证接口
  */
+@Api(tags = {"01-认证接口"})
 @RestController
 public class AuthEndpoint {
 
@@ -29,9 +32,10 @@ public class AuthEndpoint {
      * @param payload
      * @return
      */
+    @ApiOperation("颁发令牌")
     @PostMapping(ServiceId.AUTH_TOKEN_ISSUE)
     public Token issueToken(@RequestBody Map<String, Object> payload) {
-        if (!payload.isEmpty()) {
+        if (payload.isEmpty()) {
             return tokenManager.generate();
         }
         return tokenManager.generate(payload);
@@ -44,6 +48,7 @@ public class AuthEndpoint {
      * @return
      */
     @PostMapping(ServiceId.AUTH_TOKEN_REFRESH)
+    @ApiOperation("刷新令牌")
     public Token refreshToken(@RequestBody RefreshTokenRequest request) {
         try {
             return tokenManager.refresh(request.getRefreshToken());
@@ -54,12 +59,13 @@ public class AuthEndpoint {
     }
 
     /**
-     * 校验令牌，校验通过
+     * 校验令牌，校验通过 -> 返回创建令牌的参数
      *
      * @param request
      * @return
      */
     @PostMapping(ServiceId.AUTH_TOKEN_VERIFY)
+    @ApiOperation("校验令牌")
     public Map<String, Object> verifyToken(@RequestBody VerifyTokenRequest request) {
         try {
             return tokenManager.verify(request.getToken());
