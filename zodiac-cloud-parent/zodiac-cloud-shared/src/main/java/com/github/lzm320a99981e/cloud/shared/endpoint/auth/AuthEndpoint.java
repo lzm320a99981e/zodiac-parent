@@ -84,11 +84,11 @@ public class AuthEndpoint {
         if (e instanceof TokenException) {
             final TokenException.Type type = ((TokenException) e).getType();
             if (type == TokenException.Type.EXPIRED) {
-                ErrorCode.AUTU_TOKEN_4002.throwException();
+                ErrorCode.AUTH_TOKEN_4002.throwException();
             }
-            ErrorCode.AUTU_TOKEN_4001.throwException();
+            ErrorCode.AUTH_TOKEN_4001.throwException();
         }
-        ErrorCode.AUTU_TOKEN_4001.throwException();
+        ErrorCode.AUTH_TOKEN_4001.throwException();
     }
 
 }

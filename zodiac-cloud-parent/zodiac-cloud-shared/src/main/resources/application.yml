@@ -1,4 +1,3 @@
-
 ################################## common options ######################################
 server:
   port: 30020
@@ -56,7 +55,7 @@ customize:
     refresh-expires-in: 720000
   filter-interceptor-api:
     enabled: true
-    url-patterns: ['/100','/api/200','/user/*']
+    url-patterns: ['/*']
 
 ################################## profile options ######################################
 ---

@@ -8,8 +8,8 @@ import com.github.lzm320a99981e.component.validation.ValidationException;
  * 错误码
  */
 public enum ErrorCode {
-    AUTU_TOKEN_4001,
-    AUTU_TOKEN_4002,
+    AUTH_TOKEN_4001,
+    AUTH_TOKEN_4002,
     ;
     private String code;
 
