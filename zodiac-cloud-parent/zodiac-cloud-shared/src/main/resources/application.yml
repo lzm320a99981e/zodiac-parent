@@ -55,7 +55,7 @@ customize:
     refresh-expires-in: 720000
   filter-interceptor-api:
     enabled: true
-    url-patterns: ['/*']
+    url-patterns: ['/**']
 
 ################################## profile options ######################################
 ---
