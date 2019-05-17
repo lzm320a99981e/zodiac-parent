@@ -50,6 +50,6 @@ for module in ${v_modules[@]}
 do
     v_file_path="${current_dir}/${module}"
     v_config="--spring.profiles.active=test"
-    echo "nohup java -jar -Xms384m -Xmx384m ${v_file_path} > /dev/null 2>&1 &"
+    echo "nohup java -jar -Xms384m -Xmx384m ${v_file_path} ${v_config} > /dev/null 2>&1 &"
     nohup java -jar -Xms384m -Xmx384m ${v_file_path} ${v_config} > /dev/null 2>&1 &
 done
