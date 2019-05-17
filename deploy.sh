@@ -33,5 +33,5 @@ done
 
 for module in ${v_modules}
 do
-    echo ${module}
+    echo "x-> "${module}
 done
