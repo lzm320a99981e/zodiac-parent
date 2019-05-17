@@ -11,10 +11,7 @@ echo "git pull result -> $v_update_result"
 
 # 判断是否需要重启 ++++++++++++++++++++++++++++++++++
 # 1.项目是否更新 ++++++++++++++++++++++++++++++++++
-v_not_update="Already up to date."
-v_update_flag=$(echo ${v_update_result} | grep "${v_not_update}")
-echo ${v_update_flag}
-if [[ ${v_update_flag} != "" ]]
+if [[ $(echo ${v_update_result} | grep "Already up-to-date") != "" ]]
 then
     echo "项目没有更新"
     exit 2
