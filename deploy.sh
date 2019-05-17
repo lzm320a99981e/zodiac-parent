@@ -43,7 +43,7 @@ done
 
 # 4.打包项目 ++++++++++++++++++++++++++++++++++
 echo "mvn clean package -e -U -DskipTests"
-mvn clean package -e -U -DskipTests -Ptest
+mvn clean package -e -U -DskipTests
 
 # 5.启动项目 ++++++++++++++++++++++++++++++++++
 for module in ${v_modules[@]}
