@@ -6,7 +6,6 @@
         <artifactId>zodiac-parent</artifactId>
         <groupId>com.github.lzm320a99981e</groupId>
         <version>1.0</version>
-        <relativePath>../zodiac-parent</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 

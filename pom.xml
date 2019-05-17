@@ -14,9 +14,9 @@
     <description>zodiac parent</description>
 
     <modules>
-        <module>../zodiac-tools</module>
-        <module>../zodiac-component-parent</module>
-        <module>../zodiac-cloud-parent</module>
+        <module>zodiac-tools</module>
+        <module>zodiac-component-parent</module>
+        <module>zodiac-cloud-parent</module>
     </modules>
 
     <!-- 许可证 -->
