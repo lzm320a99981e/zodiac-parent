@@ -1,16 +1,26 @@
-
 ################################## common options ######################################
 server:
   port: 30010
+debug: true
+spring:
+  application:
+    name: zodiac-cloud-registration
+  profiles:
+    active: dev
+# 日志
+logging:
+  level:
+    root: info
+  file: logs/${spring.application.name}.log
 # https://blog.asarkar.org/technical/netflix-eureka/
 eureka:
   # EurekaServerConfigBean
   server:
-    # \u5173\u95ED\u81EA\u6211\u4FDD\u62A4
+    # 关闭自我保护
     enable-self-preservation: false
-    # \u7EED\u671F\u65F6\u95F4(\u4E3B\u52A8\u5931\u6548\u76D1\u6D4B\u95F4\u9694)
+    # 续期时间(主动失效监测间隔)
     eviction-interval-timer-in-ms: 30000
-    # \u7981\u7528 readOnlyCacheMap \u5DF2\u7ECF\u6709\u4E86 readWriterCacheMap
+    # 禁用 readOnlyCacheMap 已经有了 readWriterCacheMap
     use-read-only-response-cache: false
   # EurekaInstanceConfigBean
   instance:
@@ -22,18 +32,6 @@ eureka:
     fetch-registry: false
     service-url:
       defaultZone: http://${eureka.instance.hostname}:${server.port}/eureka/
-
-spring:
-  application:
-    name: zodiac-cloud-registration
-  profiles:
-    active: dev
-
-# \u65E5\u5FD7
-logging:
-  level:
-    root: info
-  file: logs/${spring.application.name}.log
 
 ################################## profile options ######################################
 ---
