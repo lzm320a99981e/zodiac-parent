@@ -13,6 +13,8 @@
     <modules>
         <module>zodiac-cloud-dependencies</module>
         <module>zodiac-cloud-commons</module>
+        <module>zodiac-cloud-registration</module>
+        <module>zodiac-cloud-shared</module>
     </modules>
     <artifactId>zodiac-cloud-parent</artifactId>
 </project>
