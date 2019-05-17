@@ -26,13 +26,12 @@ for key in ${!v_module_map[@]}
 do
     if [[ $(echo ${v_update_result} | grep "$key") != "" ]]
     then
-        echo 'index -> '${v_index}
         v_modules[$v_index]=${v_module_map[$key]}
         v_index=$[v_index+1]
     fi
 done
 
-for module in ${v_modules}
+for module in ${v_modules[@]}
 do
     echo "x-> "${module}
 done
