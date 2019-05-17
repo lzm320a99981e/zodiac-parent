@@ -6,9 +6,7 @@ echo "current dir: $current_dir"
 
 # 更新项目 ++++++++++++++++++++++++++++++++++
 echo "git pull origin master"
-git fetch --all
-git reset --hard origin/master
-v_update_result=`git pull`
+v_update_result=`git pull origin master`
 echo "git pull result -> $v_update_result"
 
 # 判断是否需要重启 ++++++++++++++++++++++++++++++++++
