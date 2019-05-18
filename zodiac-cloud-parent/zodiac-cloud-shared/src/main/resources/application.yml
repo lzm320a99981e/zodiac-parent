@@ -25,8 +25,8 @@ swagger:
 eureka:
   instance:
     prefer-ip-address: true
-    hostname: registration
-    instance-id: ${spring.cloud.client.ip-address}:${server.port}
+    hostname: 140.143.13.75
+    instance-id: ${eureka.instance.hostname}:${server.port}
     # 心跳间隔
     lease-renewal-interval-in-seconds: 30
     # 心跳过期
@@ -37,7 +37,7 @@ eureka:
     # 刷新依赖的服务列表
     registry-fetch-interval-seconds: 30
     service-url:
-      defaultZone: http://registration:30010/eureka/
+      defaultZone: http://localhost:30010/eureka/
 ribbon:
   # 处理超时时间
   ConnectTimeout: 10000
