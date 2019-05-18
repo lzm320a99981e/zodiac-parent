@@ -24,8 +24,8 @@ eureka:
     use-read-only-response-cache: false
   # EurekaInstanceConfigBean
   instance:
-    hostname: 127.0.0.1
-    instance-id: ${spring.cloud.client.ip-address}:${server.port}
+    hostname: 140.143.13.75
+    instance-id: ${eureka.instance.hostname}:${server.port}
   # EurekaClientConfigBean
   client:
     register-with-eureka: false
