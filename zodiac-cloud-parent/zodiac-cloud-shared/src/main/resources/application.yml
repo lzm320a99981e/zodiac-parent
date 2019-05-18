@@ -25,7 +25,7 @@ swagger:
 eureka:
   instance:
     prefer-ip-address: true
-    hostname: ${spring.cloud.client.ip-address}
+    hostname: registration
     instance-id: ${spring.cloud.client.ip-address}:${server.port}
     # 心跳间隔
     lease-renewal-interval-in-seconds: 30
