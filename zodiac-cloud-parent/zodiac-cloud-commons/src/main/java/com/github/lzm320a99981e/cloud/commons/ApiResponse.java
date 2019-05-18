@@ -63,6 +63,10 @@ public class ApiResponse {
         return ApiResponse.create("5001", "invalid request parameter");
     }
 
+    public static ApiResponse invalidRequestUrl() {
+        return ApiResponse.create("5002", "invalid request url");
+    }
+
     public ApiResponse data(Object data) {
         this.data = data;
         return this;
