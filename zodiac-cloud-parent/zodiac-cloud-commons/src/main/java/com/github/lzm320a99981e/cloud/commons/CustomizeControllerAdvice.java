@@ -15,7 +15,7 @@ import java.util.Objects;
  * 自定义控制层通知
  */
 @Slf4j
-@ControllerAdvice(basePackages = {"com.github.lzm320a99981e","com.zodiac.app"})
+@ControllerAdvice(basePackages = {"com.github.lzm320a99981e", "com.zodiac.app"})
 public class CustomizeControllerAdvice {
     /**
      * 自定义控制层异常处理器
@@ -40,6 +40,11 @@ public class CustomizeControllerAdvice {
     @ExceptionHandler(value = Exception.class)
     @ResponseBody
     public Object handle(HttpServletRequest request, HttpServletResponse response, Exception e) {
+        /**
+         * 设置标识，此次请求已经过全局异常处理
+         * @see CustomizeFilterInterceptorApi
+         */
+        request.setAttribute(CustomizeConstants.REQUEST_ATTRIBUTE_CUSTOMIZE_CONTROLLER_EXCEPTION_PROCESSED, e);
         if (Objects.isNull(this.customizeControllerExceptionHandler)) {
             this.customizeControllerExceptionHandler = new CustomizeDefaultControllerExceptionHandler(validationExceptionHandler);
         }

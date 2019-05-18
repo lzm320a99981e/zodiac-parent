@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.util.Objects;
 
 /**
  * API 拦截器
@@ -30,9 +31,15 @@ public class CustomizeFilterInterceptorApi extends CustomizeAbstractFilterInterc
             ContentCachingResponseWrapper responseWrapper = (ContentCachingResponseWrapper) response;
             try {
                 final String responseText = StreamUtils.copyToString(responseWrapper.getContentInputStream(), Charset.forName(responseWrapper.getCharacterEncoding()));
-                final ApiResponse apiResponse = ApiResponse.success(JSON.parse(responseText));
-                responseWrapper.resetBuffer();
-                responseWrapper.getWriter().write(JSON.toJSONString(apiResponse));
+
+                // 异常返回值，不需要进行包装，直接返回
+                if (Objects.nonNull(request.getAttribute(CustomizeConstants.REQUEST_ATTRIBUTE_CUSTOMIZE_CONTROLLER_EXCEPTION_PROCESSED))) {
+                    writerAndFlush(responseWrapper, responseText);
+                    return;
+                }
+
+                // 正常返回，需要把数据进行包装
+                writerAndFlush(responseWrapper, JSON.toJSONString(ApiResponse.success(JSON.parse(responseText))));
             } catch (IOException e) {
                 ReflectionUtils.rethrowRuntimeException(e);
             }
@@ -50,12 +57,16 @@ public class CustomizeFilterInterceptorApi extends CustomizeAbstractFilterInterc
     public void onException(HttpServletRequest request, HttpServletResponse response, Exception ex) {
         if (ContentCachingResponseWrapper.class.isAssignableFrom(response.getClass())) {
             ContentCachingResponseWrapper responseWrapper = (ContentCachingResponseWrapper) response;
-            try {
-                responseWrapper.resetBuffer();
-                responseWrapper.getWriter().write(JSON.toJSONString(ApiResponse.error()));
-            } catch (IOException e) {
-                ReflectionUtils.rethrowRuntimeException(e);
-            }
+            writerAndFlush(responseWrapper, JSON.toJSONString(ApiResponse.error()));
+        }
+    }
+
+    private void writerAndFlush(ContentCachingResponseWrapper responseWrapper, String text) {
+        try {
+            responseWrapper.resetBuffer();
+            responseWrapper.getWriter().write(text);
+        } catch (IOException e) {
+            ReflectionUtils.rethrowRuntimeException(e);
         }
     }
 
