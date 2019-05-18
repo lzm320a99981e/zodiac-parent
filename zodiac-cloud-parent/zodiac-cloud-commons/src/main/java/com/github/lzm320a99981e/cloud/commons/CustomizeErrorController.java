@@ -36,12 +36,12 @@ public class CustomizeErrorController implements ErrorController {
         // Appropriate HTTP response code (e.g. 404 or 500) is automatically set by Spring.
         HttpStatus status = getStatus(request);
         PrintWriter writer = response.getWriter();
-        switch (status) {
-            case NOT_FOUND:
-                writer.write(JSON.toJSONString(ApiResponse.invalidRequestUrl()));
-                break;
-            default:
-                writer.write(JSON.toJSONString(ApiResponse.error()));
+        // 统一返回状态码为成功
+        response.setStatus(HttpStatus.OK.value());
+        if (status == HttpStatus.NOT_FOUND) {
+            writer.write(JSON.toJSONString(ApiResponse.invalidRequestUrl()));
+        } else {
+            writer.write(JSON.toJSONString(ApiResponse.error()));
         }
         writer.flush();
     }
