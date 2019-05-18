@@ -37,7 +37,7 @@ eureka:
     # 刷新依赖的服务列表
     registry-fetch-interval-seconds: 30
     service-url:
-      defaultZone: http://localhost:30010/eureka/
+      defaultZone: http://registration:30010/eureka/
 ribbon:
   # 处理超时时间
   ConnectTimeout: 10000
