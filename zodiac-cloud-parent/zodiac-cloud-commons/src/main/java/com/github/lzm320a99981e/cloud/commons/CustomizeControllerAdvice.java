@@ -15,7 +15,7 @@ import java.util.Objects;
  * 自定义控制层通知
  */
 @Slf4j
-@ControllerAdvice
+@ControllerAdvice(basePackages = {"com.github.lzm320a99981e","com.zodiac.app"})
 public class CustomizeControllerAdvice {
     /**
      * 自定义控制层异常处理器

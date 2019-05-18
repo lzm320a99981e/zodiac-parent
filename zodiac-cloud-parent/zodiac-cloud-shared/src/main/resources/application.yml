@@ -45,7 +45,6 @@ ribbon:
   ReadTimeout: 10000
   # 负载时的实例缓存
   ServerListRefreshInterval: 20000
-
 # 自定义
 customize:
   # 令牌
@@ -55,7 +54,7 @@ customize:
     refresh-expires-in: 720000
   filter-interceptor-api:
     enabled: true
-    url-patterns: ['/**']
+    url-patterns: ['/8*']
 
 ################################## profile options ######################################
 ---
