@@ -11,4 +11,7 @@
     <packaging>pom</packaging>
 
     <artifactId>zodiac-app-parent</artifactId>
+    <modules>
+        <module>zodiac-app-gsps</module>
+    </modules>
 </project>

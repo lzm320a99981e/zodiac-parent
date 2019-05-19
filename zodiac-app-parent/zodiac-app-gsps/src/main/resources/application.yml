@@ -14,8 +14,8 @@ spring:
     encoding: UTF-8
 # log
 logging:
-  level:
-    com.zodiac.app: debug
+  com.zodiac.app: debug
+  com.github.lzm320a99981e: debug
   file: logs/${spring.application.name}.log
 # swagger
 swagger:
