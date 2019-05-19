@@ -20,6 +20,15 @@ public class RequestContextHelper {
     }
 
     /**
+     * 获取令牌参数
+     *
+     * @return
+     */
+    public Map<String, Object> getTokenBody() {
+        return (Map<String, Object>) getRequest().getAttribute(Constants.REQUEST_ATTRIBUTE_TOKEN_BODY);
+    }
+
+    /**
      * 请求参数
      *
      * @return
@@ -76,6 +85,11 @@ public class RequestContextHelper {
         return headerMap;
     }
 
+    /**
+     * 请求IP，可能包含多个
+     *
+     * @return
+     */
     public static String getRequestIP() {
         HttpServletRequest request = getRequest();
         Object cacheValue = request.getAttribute(REQUEST_ATTRIBUTE_CACHE_IP_KEY);
@@ -114,6 +128,11 @@ public class RequestContextHelper {
         return ip;
     }
 
+    /**
+     * 获取第一个请求IP,第一个为客户端IP
+     *
+     * @return
+     */
     public static String getRequestFirstIp() {
         return getRequestIP().split(",")[0];
     }
