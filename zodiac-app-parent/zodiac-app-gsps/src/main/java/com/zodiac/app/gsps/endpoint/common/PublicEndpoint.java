@@ -7,12 +7,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.Valid;
+
 @RestController
 @RequestMapping("${" + Constants.ENV_PREFIX + "api.router.public-prefix:/public}")
 public class PublicEndpoint {
 
     @PostMapping("100101")
-    public Object login(@RequestBody PersonalLoginRequest request) {
+    public Object login(@Valid @RequestBody PersonalLoginRequest request) {
         return request;
     }
 }
