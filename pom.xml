@@ -17,6 +17,7 @@
         <module>zodiac-tools</module>
         <module>zodiac-component-parent</module>
         <module>zodiac-cloud-parent</module>
+        <module>zodiac-app-parent</module>
         <module>zodiac-quickly-starter</module>
     </modules>
 

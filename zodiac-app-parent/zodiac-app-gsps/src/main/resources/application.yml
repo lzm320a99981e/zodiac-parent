@@ -1,0 +1,31 @@
+########################################
+debug: true
+server:
+  port: 9999
+# spring
+spring:
+  profiles:
+    active: dev
+  application:
+    name: zodiac-app-gsps
+  # \u56FD\u9645\u5316
+  messages:
+    basename: i18n/messages,i18n/validation/messages
+    encoding: UTF-8
+# log
+logging:
+  level:
+    com.zodiac.app: debug
+  file: logs/${spring.application.name}.log
+# swagger
+swagger:
+  base-package: com.zodiac.app
+  base-path: /**
+  exclude-path: /error
+########################################
+quickly:
+  starter:
+    token:
+      base64-encoded-secret-key: 66668888
+      expires-in: 30
+      refresh-expires-in: 7200

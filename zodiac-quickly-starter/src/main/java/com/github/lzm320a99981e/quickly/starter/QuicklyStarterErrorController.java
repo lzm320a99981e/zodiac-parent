@@ -18,9 +18,9 @@ import java.util.Objects;
 /**
  * 将一些全局异常处理器捕获不到的异常抛出来，交给全局的异常处理器来处理
  */
-@Controller(Constants.BEAN_NAME_PREFIX + "GlobalErrorController")
+@Controller(Constants.BEAN_NAME_PREFIX + "QuicklyStarterErrorController")
 @RequestMapping("${server.error.path:${error.path:/error}}")
-public class GlobalErrorController implements ErrorController {
+public class QuicklyStarterErrorController implements ErrorController {
 
     @Value("${server.error.path:${error.path:/error}}")
     private String path;

@@ -16,8 +16,8 @@ import java.util.Objects;
 /**
  * 自定义Bean配置
  */
-@Configuration(Constants.BEAN_NAME_PREFIX + "GlobalBeanConfiguration")
-public class GlobalBeanConfiguration {
+@Configuration
+public class QuicklyStarterBeanConfiguration {
 
     /**
      * Api 参数配置

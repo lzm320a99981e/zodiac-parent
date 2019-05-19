@@ -15,9 +15,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 
-@RestController(Constants.BEAN_NAME_PREFIX + "PublicEndpoint")
+@RestController
 @RequestMapping("${" + Constants.ENV_PREFIX + "api.router.public-prefix:/public}")
-public class PublicEndpoint {
+public class QuicklyStarterPublicEndpoint {
     @Autowired
     private TokenManager tokenManager;
 
