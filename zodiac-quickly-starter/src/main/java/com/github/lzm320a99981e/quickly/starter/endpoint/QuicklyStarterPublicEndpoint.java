@@ -4,8 +4,6 @@ import com.github.lzm320a99981e.component.token.Token;
 import com.github.lzm320a99981e.component.token.TokenException;
 import com.github.lzm320a99981e.component.token.TokenManager;
 import com.github.lzm320a99981e.quickly.starter.Constants;
-import com.github.lzm320a99981e.quickly.starter.api.ApiException;
-import com.github.lzm320a99981e.quickly.starter.api.ApiResponse;
 import com.github.lzm320a99981e.quickly.starter.endpoint.dto.RefreshTokenRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -27,9 +25,9 @@ public class QuicklyStarterPublicEndpoint {
             return tokenManager.refresh(request.getRefreshToken());
         } catch (TokenException e) {
             if (TokenException.Type.EXPIRED == e.getType()) {
-                throw new ApiException(ApiResponse.create("4001", "过期的刷新令牌"));
+                throw ErrorCode.REFRESH_TOKEN_4002.getException();
             }
-            throw new ApiException(ApiResponse.create("4002", "无效的刷新令牌"));
+            throw ErrorCode.REFRESH_TOKEN_4001.getException();
         }
     }
 }
