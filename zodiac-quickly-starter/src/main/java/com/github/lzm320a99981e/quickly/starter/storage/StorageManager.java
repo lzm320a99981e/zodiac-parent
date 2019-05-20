@@ -10,7 +10,6 @@ import com.github.lzm320a99981e.zodiac.tools.IdGenerator;
 import com.google.common.util.concurrent.*;
 import lombok.extern.slf4j.Slf4j;
 import org.checkerframework.checker.nullness.qual.Nullable;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.multipart.MultipartFile;
@@ -28,10 +27,13 @@ import java.util.stream.Collectors;
 
 @Slf4j
 public class StorageManager {
-    private final ListeningExecutorService executorService = MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(3));
+    private final StorageProperties storageProperties;
+    private final FileUploadInterceptor fileUploadInterceptor;
 
-    @Autowired
-    private StorageProperties storageProperties;
+    public StorageManager(StorageProperties storageProperties, FileUploadInterceptor fileUploadInterceptor) {
+        this.storageProperties = storageProperties;
+        this.fileUploadInterceptor = Objects.isNull(fileUploadInterceptor) ? new DefaultFileUploadInterceptor() : fileUploadInterceptor;
+    }
 
     public List<FileUploadResponse> upload(MultipartHttpServletRequest request) throws IOException {
         final MultiValueMap<String, MultipartFile> multiFileMap = request.getMultiFileMap();
@@ -50,8 +52,11 @@ public class StorageManager {
                 if (file.isEmpty()) {
                     ErrorCode.FILE_UPLOAD_4002.throwException(file.getName(), file.getOriginalFilename());
                 }
-                // TODO 前置处理
-                fileUploadRequests.add(createFileUploadRequest(file, request));
+                // 前置处理
+                final FileUploadRequest fileUploadRequest = createFileUploadRequest(file, request);
+                if (fileUploadInterceptor.preHandle(fileUploadRequest)) {
+                    fileUploadRequests.add(fileUploadRequest);
+                }
             }
         }
 
@@ -71,6 +76,14 @@ public class StorageManager {
         }).collect(Collectors.toList());
     }
 
+    /**
+     * 创建上传文件信息
+     *
+     * @param file
+     * @param request
+     * @return
+     * @throws IOException
+     */
     private FileUploadRequest createFileUploadRequest(MultipartFile file, MultipartHttpServletRequest request) throws IOException {
         final Map<String, String> classificationMap = storageProperties.getClassificationMap();
         final String classificationParameterSuffix = storageProperties.getClassificationParameterSuffix();
@@ -113,12 +126,12 @@ public class StorageManager {
                     new FutureCallback<FileUploadRequest>() {
                         @Override
                         public void onSuccess(@Nullable FileUploadRequest result) {
-
+                            fileUploadInterceptor.onSuccess(result);
                         }
 
                         @Override
                         public void onFailure(Throwable t) {
-
+                            fileUploadInterceptor.onFailure(request, t);
                         }
                     },
                     MoreExecutors.directExecutor()
