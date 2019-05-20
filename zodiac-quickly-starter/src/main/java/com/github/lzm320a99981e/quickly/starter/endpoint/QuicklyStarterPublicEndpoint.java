@@ -19,7 +19,13 @@ public class QuicklyStarterPublicEndpoint {
     @Autowired
     private TokenManager tokenManager;
 
-    @PostMapping("refresh-token")
+    /**
+     * 刷新令牌
+     *
+     * @param request
+     * @return
+     */
+    @PostMapping(ServiceId.PUBLIC_REFRESH_TOKEN)
     public Token refreshToken(@Valid @RequestBody RefreshTokenRequest request) {
         try {
             return tokenManager.refresh(request.getRefreshToken());
