@@ -27,14 +27,21 @@ import java.util.stream.Collectors;
 
 @Slf4j
 public class StorageManager {
-    private final StorageProperties storageProperties;
-    private final FileUploadInterceptor fileUploadInterceptor;
+    private final StorageProperties properties;
+    private final FileUploadInterceptor interceptor;
 
-    public StorageManager(StorageProperties storageProperties, FileUploadInterceptor fileUploadInterceptor) {
-        this.storageProperties = storageProperties;
-        this.fileUploadInterceptor = Objects.isNull(fileUploadInterceptor) ? new DefaultFileUploadInterceptor() : fileUploadInterceptor;
+    public StorageManager(StorageProperties properties, FileUploadInterceptor interceptor) {
+        this.properties = properties;
+        this.interceptor = Objects.isNull(interceptor) ? new DefaultFileUploadInterceptor() : interceptor;
     }
 
+    /**
+     * 文件上传
+     *
+     * @param request
+     * @return
+     * @throws IOException
+     */
     public List<FileUploadResponse> upload(MultipartHttpServletRequest request) throws IOException {
         final MultiValueMap<String, MultipartFile> multiFileMap = request.getMultiFileMap();
 
@@ -54,7 +61,7 @@ public class StorageManager {
                 }
                 // 前置处理
                 final FileUploadRequest fileUploadRequest = createFileUploadRequest(file, request);
-                if (fileUploadInterceptor.preHandle(fileUploadRequest)) {
+                if (interceptor.preHandle(fileUploadRequest)) {
                     fileUploadRequests.add(fileUploadRequest);
                 }
             }
@@ -85,8 +92,8 @@ public class StorageManager {
      * @throws IOException
      */
     private FileUploadRequest createFileUploadRequest(MultipartFile file, MultipartHttpServletRequest request) throws IOException {
-        final Map<String, String> classificationMap = storageProperties.getClassificationMap();
-        final String classificationParameterSuffix = storageProperties.getClassificationParameterSuffix();
+        final Map<String, String> classificationMap = properties.getClassificationMap();
+        final String classificationParameterSuffix = properties.getClassificationParameterSuffix();
 
         final FileUploadRequest upload = new FileUploadRequest();
         final String parameterName = file.getName();
@@ -126,12 +133,12 @@ public class StorageManager {
                     new FutureCallback<FileUploadRequest>() {
                         @Override
                         public void onSuccess(@Nullable FileUploadRequest result) {
-                            fileUploadInterceptor.onSuccess(result);
+                            interceptor.onSuccess(result);
                         }
 
                         @Override
                         public void onFailure(Throwable t) {
-                            fileUploadInterceptor.onFailure(request, t);
+                            interceptor.onFailure(request, t);
                         }
                     },
                     MoreExecutors.directExecutor()
@@ -145,7 +152,7 @@ public class StorageManager {
      * @param request
      */
     private FileUploadRequest doUpload(FileUploadRequest request) {
-        final Resource location = storageProperties.getLocation();
+        final Resource location = properties.getLocation();
         final String savePath = request.getSavePath();
         final String saveKey = request.getSaveKey();
         try {

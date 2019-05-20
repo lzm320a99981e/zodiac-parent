@@ -5,7 +5,11 @@ import com.github.lzm320a99981e.component.validation.LocaleValidationExceptionHa
 import com.github.lzm320a99981e.component.validation.ValidationExceptionHandler;
 import com.github.lzm320a99981e.quickly.starter.api.ApiProperties;
 import com.github.lzm320a99981e.quickly.starter.api.ApiResponse;
+import com.github.lzm320a99981e.quickly.starter.storage.FileUploadInterceptor;
+import com.github.lzm320a99981e.quickly.starter.storage.StorageManager;
+import com.github.lzm320a99981e.quickly.starter.storage.StorageProperties;
 import com.github.lzm320a99981e.quickly.starter.token.TokenProperties;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
@@ -70,5 +74,28 @@ public class QuicklyStarterBeanConfiguration {
             tokenManager.setRefreshTokenDurationInSeconds(tokenProperties.getRefreshExpiresIn());
         }
         return tokenManager;
+    }
+
+    /**
+     * 存储参数配置
+     *
+     * @return
+     */
+    @Bean
+    @ConfigurationProperties(Constants.ENV_PREFIX + "storage")
+    public StorageProperties storageProperties() {
+        return new StorageProperties();
+    }
+
+    /**
+     * 存储管理器
+     *
+     * @param properties
+     * @param interceptor
+     * @return
+     */
+    @Bean
+    public StorageManager storageManager(StorageProperties properties, @Autowired(required = false) FileUploadInterceptor interceptor) {
+        return new StorageManager(properties, interceptor);
     }
 }
