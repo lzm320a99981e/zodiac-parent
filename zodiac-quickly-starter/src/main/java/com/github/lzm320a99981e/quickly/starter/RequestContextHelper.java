@@ -1,10 +1,13 @@
 package com.github.lzm320a99981e.quickly.starter;
 
 import com.google.common.collect.Maps;
+import org.springframework.http.MediaType;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.*;
 
 /**
@@ -17,6 +20,10 @@ public class RequestContextHelper {
 
     public static HttpServletRequest getRequest() {
         return ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+    }
+
+    public static HttpServletResponse getResponse() {
+        return ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getResponse();
     }
 
     /**
@@ -135,5 +142,29 @@ public class RequestContextHelper {
      */
     public static String getRequestFirstIp() {
         return getRequestIP().split(",")[0];
+    }
+
+
+    /**
+     * 下载
+     *
+     * @param data
+     * @param downloadName
+     */
+    public static void download(byte[] data, String downloadName) {
+        try {
+            final HttpServletResponse response = getResponse();
+            // 设置下载类型
+            response.setContentType(MediaType.APPLICATION_OCTET_STREAM_VALUE);
+            // 下载文件名乱码解决
+            String fileName = new String(downloadName.getBytes("gbk"), "iso8859-1");
+            response.addHeader("Content-Disposition", "attachment;fileName=" + fileName);
+            final ServletOutputStream outputStream = response.getOutputStream();
+            outputStream.write(data);
+            outputStream.flush();
+            outputStream.close();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 }

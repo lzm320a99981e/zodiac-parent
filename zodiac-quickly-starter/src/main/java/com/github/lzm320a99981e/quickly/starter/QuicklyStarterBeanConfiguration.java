@@ -5,6 +5,7 @@ import com.github.lzm320a99981e.component.validation.LocaleValidationExceptionHa
 import com.github.lzm320a99981e.component.validation.ValidationExceptionHandler;
 import com.github.lzm320a99981e.quickly.starter.api.ApiProperties;
 import com.github.lzm320a99981e.quickly.starter.api.ApiResponse;
+import com.github.lzm320a99981e.quickly.starter.storage.FileDownloadInterceptor;
 import com.github.lzm320a99981e.quickly.starter.storage.FileUploadInterceptor;
 import com.github.lzm320a99981e.quickly.starter.storage.StorageManager;
 import com.github.lzm320a99981e.quickly.starter.storage.StorageProperties;
@@ -91,11 +92,12 @@ public class QuicklyStarterBeanConfiguration {
      * 存储管理器
      *
      * @param properties
-     * @param interceptor
+     * @param uploadInterceptor
+     * @param downloadInterceptor
      * @return
      */
     @Bean
-    public StorageManager storageManager(StorageProperties properties, @Autowired(required = false) FileUploadInterceptor interceptor) {
-        return new StorageManager(properties, interceptor);
+    public StorageManager storageManager(StorageProperties properties, @Autowired(required = false) FileUploadInterceptor uploadInterceptor, @Autowired(required = false) FileDownloadInterceptor downloadInterceptor) {
+        return new StorageManager(properties, uploadInterceptor, downloadInterceptor);
     }
 }

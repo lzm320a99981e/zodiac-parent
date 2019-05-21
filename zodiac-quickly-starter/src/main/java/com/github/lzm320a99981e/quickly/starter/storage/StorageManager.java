@@ -3,6 +3,8 @@ package com.github.lzm320a99981e.quickly.starter.storage;
 import com.alibaba.fastjson.JSON;
 import com.github.lzm320a99981e.quickly.starter.RequestContextHelper;
 import com.github.lzm320a99981e.quickly.starter.endpoint.ErrorCode;
+import com.github.lzm320a99981e.quickly.starter.storage.dto.FileDownloadEntry;
+import com.github.lzm320a99981e.quickly.starter.storage.dto.FileDownloadRequest;
 import com.github.lzm320a99981e.quickly.starter.storage.dto.FileUploadRequest;
 import com.github.lzm320a99981e.quickly.starter.storage.dto.FileUploadResponse;
 import com.github.lzm320a99981e.zodiac.tools.ExceptionHelper;
@@ -32,12 +34,15 @@ import java.util.stream.Collectors;
 @Slf4j
 public class StorageManager {
     private final StorageProperties properties;
-    private final FileUploadInterceptor interceptor;
+    private final FileUploadInterceptor uploadInterceptor;
+    private final FileDownloadInterceptor downloadInterceptor;
 
-    public StorageManager(StorageProperties properties, FileUploadInterceptor interceptor) {
+    public StorageManager(StorageProperties properties, FileUploadInterceptor uploadInterceptor, FileDownloadInterceptor downloadInterceptor) {
         this.properties = properties;
-        this.interceptor = Objects.isNull(interceptor) ? new DefaultFileUploadInterceptor() : interceptor;
+        this.uploadInterceptor = Objects.isNull(uploadInterceptor) ? new DefaultFileUploadInterceptor() : uploadInterceptor;
+        this.downloadInterceptor = Objects.isNull(downloadInterceptor) ? new DefaultFileDownloadInterceptor() : downloadInterceptor;
     }
+    // ============================================ 文件上传 ============================================
 
     /**
      * 文件上传
@@ -65,7 +70,7 @@ public class StorageManager {
                 }
                 // 文件上传拦截处理
                 final FileUploadRequest fileUploadRequest = createFileUploadRequest(file, request);
-                if (interceptor.preHandle(fileUploadRequest)) {
+                if (uploadInterceptor.preHandle(fileUploadRequest)) {
                     fileUploadRequests.add(fileUploadRequest);
                 }
             }
@@ -152,12 +157,12 @@ public class StorageManager {
                     new FutureCallback<FileUploadRequest>() {
                         @Override
                         public void onSuccess(@Nullable FileUploadRequest result) {
-                            interceptor.onSuccess(result);
+                            uploadInterceptor.onSuccess(result);
                         }
 
                         @Override
                         public void onFailure(Throwable t) {
-                            interceptor.onFailure(request, t);
+                            uploadInterceptor.onFailure(request, t);
                         }
                     },
                     MoreExecutors.directExecutor()
@@ -189,4 +194,25 @@ public class StorageManager {
             throw ExceptionHelper.wrappedRuntimeException(e);
         }
     }
+
+    // ============================================ 文件下载 ============================================
+    public void download(FileDownloadRequest request) {
+        final List<String> saveKeys = request.getSaveKeys();
+        final String downloadName = request.getDownloadName();
+
+        try {
+            // 获取可下载的文件列表
+            final List<FileDownloadEntry> entries = downloadInterceptor.keysTransform(saveKeys, properties.getLocation());
+
+            // 单个文件下载
+            if (entries.size() == 1) {
+                final FileDownloadEntry entry = entries.get(0);
+                RequestContextHelper.download(entry.getData(), Objects.isNull(downloadName) ? entry.getName() : downloadName);
+            }
+
+        } catch (Exception e) {
+            throw ExceptionHelper.wrappedRuntimeException(e);
+        }
+    }
+
 }
