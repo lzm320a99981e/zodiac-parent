@@ -13,12 +13,17 @@ public class StorageProperties {
     /**
      * 文件上传存储位置
      */
-    private File location;
+    private File location = new File("default-upload-folder");
 
     /**
      * 文件分类参数后缀(这个参数名需要添加上传文件参数名称的后面)
      */
-    private String classificationParameterSuffix;
+    private String classificationParameterSuffix = "Classification";
+
+    /**
+     * 文件覆盖参数后缀(这个参数名需要添加上传文件参数名称的后面)
+     */
+    private String overrideKeyParameterSuffix = "OverrideKey";
 
     /**
      * 文件分类存储映射, key：类别，value：存储相对路径

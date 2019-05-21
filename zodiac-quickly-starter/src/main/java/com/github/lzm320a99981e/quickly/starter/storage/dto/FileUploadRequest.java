@@ -54,9 +54,14 @@ public class FileUploadRequest {
     private String saveName;
 
     /**
-     * 存储类型
+     * 存储分类
      */
-    private String saveType;
+    private String saveClassification;
+
+    /**
+     * 是否覆盖
+     */
+    private boolean override;
 
     /**
      * 附加信息

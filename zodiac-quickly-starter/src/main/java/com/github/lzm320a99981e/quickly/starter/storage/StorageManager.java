@@ -96,9 +96,6 @@ public class StorageManager {
      * @throws IOException
      */
     private FileUploadRequest createFileUploadRequest(MultipartFile file, MultipartHttpServletRequest request) throws IOException {
-        final Map<String, String> classificationMap = properties.getClassificationMap();
-        final String classificationParameterSuffix = properties.getClassificationParameterSuffix();
-
         final FileUploadRequest upload = new FileUploadRequest();
         final String parameterName = file.getName();
         upload.setParameterName(parameterName);
@@ -109,6 +106,9 @@ public class StorageManager {
         upload.setHeaderMap(RequestContextHelper.getHeaderMap());
         upload.setSaveKey(IdGenerator.uuid32());
 
+        // 分类信息校验
+        final Map<String, String> classificationMap = properties.getClassificationMap();
+        final String classificationParameterSuffix = properties.getClassificationParameterSuffix();
         final String classificationParameterName = parameterName + classificationParameterSuffix;
         final String classification = request.getParameter(classificationParameterName);
         if (Objects.nonNull(classification)) {
@@ -116,8 +116,23 @@ public class StorageManager {
                 // 未找到匹配的分类信息
                 ErrorCode.FILE_UPLOAD_4003.throwException(classificationParameterName, classification);
             }
-            upload.setSaveType(classification);
+            upload.setSaveClassification(classification);
             upload.setSavePath(classificationMap.get(classification));
+        }
+
+        // 覆盖信息校验
+        final File location = properties.getLocation();
+        final String overrideKeyParameterSuffix = properties.getOverrideKeyParameterSuffix();
+        final String overrideKeyParameterName = parameterName + overrideKeyParameterSuffix;
+        final String overrideKey = request.getParameter(overrideKeyParameterName);
+        if (Objects.nonNull(overrideKey)) {
+            final String savePath = upload.getSavePath();
+            final Path overridePath = Paths.get(location.getAbsolutePath(), Objects.isNull(savePath) ? "" : savePath, overrideKey);
+            if (!overridePath.toFile().exists()) {
+                ErrorCode.FILE_UPLOAD_4004.throwException(overrideKeyParameterName, overrideKey);
+            }
+            upload.setOverride(true);
+            upload.setSaveKey(overrideKey);
         }
 
         return upload;
@@ -164,11 +179,11 @@ public class StorageManager {
             if (!path.getParent().toFile().exists()) {
                 path.getParent().toFile().mkdirs();
             }
-            log.info("\n++++++++++++++++++++++++++ 文件上传-开始 +++++++++++++++++++++++++++\n{} -> {}", request.getSaveKey(), path.toFile().getAbsolutePath());
+            log.info("\n++++++++++++++++++++++++++ 文件上传(" + (request.isOverride() ? "覆盖" : "新增") + ")-开始 +++++++++++++++++++++++++++\n{} -> {}", saveKey, path.toFile().getAbsolutePath());
             final long startTime = System.currentTimeMillis();
             Files.write(path, request.getContent());
             final long usedTime = System.currentTimeMillis() - startTime;
-            log.info("\n++++++++++++++++++++++++++ 文件上传-结束(用时: {} 毫秒) +++++++++++++++++++++++++++\n{} -> {}", usedTime, request.getSaveKey(), path.toFile().getAbsolutePath());
+            log.info("\n++++++++++++++++++++++++++ 文件上传(" + (request.isOverride() ? "覆盖" : "新增") + ")-结束(用时: {} 毫秒) +++++++++++++++++++++++++++\n{} -> {}", usedTime, saveKey, path.toFile().getAbsolutePath());
             return request;
         } catch (IOException e) {
             throw ExceptionHelper.wrappedRuntimeException(e);

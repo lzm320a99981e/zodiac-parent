@@ -15,7 +15,8 @@ public enum ErrorCode {
     REFRESH_TOKEN_4002("过期的刷新令牌"),
     FILE_UPLOAD_4001("未获取到上传的文件"),
     FILE_UPLOAD_4002("上传文件内容为空，参数名称：[{0}]，文件名称：[{1}]"),
-    FILE_UPLOAD_4003("未找到上传的分类信息，分类参数名称：[{0}]，分类参数值：[{1}]"),
+    FILE_UPLOAD_4003("分类信息不存在，分类参数名称：[{0}]，分类参数值：[{1}]"),
+    FILE_UPLOAD_4004("覆盖文件不存在，覆盖参数名称：[{0}]，覆盖参数值：[{1}]"),
     ;
     private String code;
     private String message;

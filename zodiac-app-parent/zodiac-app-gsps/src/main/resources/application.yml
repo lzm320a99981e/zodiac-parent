@@ -31,8 +31,6 @@ quickly:
       expires-in: 30
       refresh-expires-in: 7200
     storage:
-      location: /Users/zhangguangyong/IdeaProjects/zodiac-parent
-      classification-parameter-suffix: Type
       classification-map:
         100101: 'personal'
         100201: 'expert'
