@@ -45,14 +45,19 @@ public class CustomizeDefaultExceptionHandler implements CustomizeExceptionHandl
     }
 
     public ApiResponse handle(Exception e) {
+        // 校验异常
+        if (ValidationException.class.isAssignableFrom(e.getClass())) {
+            return exceptionToApiResponse(validationExceptionHandler.handle((ValidationException) e));
+        }
+
+        // 接口业务异常
+        if (ApiException.class.isAssignableFrom(e.getClass())) {
+            return ((ApiException) e).getApiResponse();
+        }
+
         // 请求参数异常（参数格式错误，导致参数不可读）
         if (HttpMessageNotReadableException.class.isAssignableFrom(e.getClass())) {
             return ApiResponse.invalidRequestBody();
-        }
-
-        // 业务校验异常
-        if (ValidationException.class.isAssignableFrom(e.getClass())) {
-            return exceptionToApiResponse(validationExceptionHandler.handle((ValidationException) e));
         }
 
         // 请求体参数校验异常(@RequestBody标识的参数)
@@ -70,6 +75,4 @@ public class CustomizeDefaultExceptionHandler implements CustomizeExceptionHandl
     private ApiResponse exceptionToApiResponse(ValidationException e) {
         return ApiResponse.create(e.getCode(), e.getMessage());
     }
-
-
 }

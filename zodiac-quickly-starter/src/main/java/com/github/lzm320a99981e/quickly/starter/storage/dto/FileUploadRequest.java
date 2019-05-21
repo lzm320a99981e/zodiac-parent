@@ -1,5 +1,6 @@
 package com.github.lzm320a99981e.quickly.starter.storage.dto;
 
+import com.alibaba.fastjson.annotation.JSONField;
 import lombok.Data;
 
 import java.util.Map;
@@ -29,6 +30,7 @@ public class FileUploadRequest {
     /**
      * 文件内容
      */
+    @JSONField(serialize = false)
     private byte[] content;
 
     /**

@@ -8,12 +8,13 @@ spring:
     active: dev
   application:
     name: zodiac-app-gsps
-  # \u56FD\u9645\u5316
+  # message
   messages:
     basename: i18n/messages,i18n/validation/messages
     encoding: UTF-8
 # log
 logging:
+  root: info
   com.zodiac.app: debug
   com.github.lzm320a99981e: debug
   file: logs/${spring.application.name}.log
@@ -29,3 +30,9 @@ quickly:
       base64-encoded-secret-key: 66668888
       expires-in: 30
       refresh-expires-in: 7200
+    storage:
+      location: /Users/zhangguangyong/IdeaProjects/zodiac-parent
+      classification-parameter-suffix: Type
+      classification-map:
+        100101: 'personal'
+        100201: 'expert'

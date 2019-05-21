@@ -14,7 +14,7 @@ import java.io.IOException;
 import java.util.List;
 
 @RestController
-@RequestMapping("${" + Constants.ENV_PREFIX + "api.router.internal-prefix:/internal}")
+@RequestMapping("${" + Constants.ENV_PREFIX + "api.router.internal-prefix:/public}")
 public class QuicklyStarterStorageEndpoint {
     @Autowired
     private StorageManager storageManager;

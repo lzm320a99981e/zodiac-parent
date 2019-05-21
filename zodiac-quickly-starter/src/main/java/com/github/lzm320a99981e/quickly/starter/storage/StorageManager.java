@@ -10,13 +10,14 @@ import com.github.lzm320a99981e.zodiac.tools.IdGenerator;
 import com.google.common.util.concurrent.*;
 import lombok.extern.slf4j.Slf4j;
 import org.checkerframework.checker.nullness.qual.Nullable;
-import org.springframework.core.io.Resource;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
@@ -25,6 +26,9 @@ import java.util.Objects;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
+/**
+ * 存储服务
+ */
 @Slf4j
 public class StorageManager {
     private final StorageProperties properties;
@@ -59,7 +63,7 @@ public class StorageManager {
                 if (file.isEmpty()) {
                     ErrorCode.FILE_UPLOAD_4002.throwException(file.getName(), file.getOriginalFilename());
                 }
-                // 前置处理
+                // 文件上传拦截处理
                 final FileUploadRequest fileUploadRequest = createFileUploadRequest(file, request);
                 if (interceptor.preHandle(fileUploadRequest)) {
                     fileUploadRequests.add(fileUploadRequest);
@@ -152,11 +156,19 @@ public class StorageManager {
      * @param request
      */
     private FileUploadRequest doUpload(FileUploadRequest request) {
-        final Resource location = properties.getLocation();
+        final File location = properties.getLocation();
         final String savePath = request.getSavePath();
         final String saveKey = request.getSaveKey();
         try {
-            Files.write(Paths.get(location.getFile().getAbsolutePath(), Objects.isNull(savePath) ? "" : savePath, saveKey), request.getContent());
+            final Path path = Paths.get(location.getAbsolutePath(), Objects.isNull(savePath) ? "" : savePath, saveKey);
+            if (!path.getParent().toFile().exists()) {
+                path.getParent().toFile().mkdirs();
+            }
+            log.info("\n++++++++++++++++++++++++++ 文件上传-开始 +++++++++++++++++++++++++++\n{} -> {}", request.getSaveKey(), path.toFile().getAbsolutePath());
+            final long startTime = System.currentTimeMillis();
+            Files.write(path, request.getContent());
+            final long usedTime = System.currentTimeMillis() - startTime;
+            log.info("\n++++++++++++++++++++++++++ 文件上传-结束(用时: {} 毫秒) +++++++++++++++++++++++++++\n{} -> {}", usedTime, request.getSaveKey(), path.toFile().getAbsolutePath());
             return request;
         } catch (IOException e) {
             throw ExceptionHelper.wrappedRuntimeException(e);

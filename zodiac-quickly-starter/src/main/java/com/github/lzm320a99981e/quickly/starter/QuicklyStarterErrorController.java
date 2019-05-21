@@ -1,7 +1,7 @@
 package com.github.lzm320a99981e.quickly.starter;
 
 
-import com.alibaba.fastjson.JSON;
+import com.github.lzm320a99981e.quickly.starter.api.ApiException;
 import com.github.lzm320a99981e.quickly.starter.api.ApiResponse;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.servlet.error.ErrorController;
@@ -12,7 +12,6 @@ import org.springframework.web.util.NestedServletException;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.PrintWriter;
 import java.util.Objects;
 
 /**
@@ -35,17 +34,14 @@ public class QuicklyStarterErrorController implements ErrorController {
             throw exception;
         }
 
-        // Appropriate HTTP response code (e.g. 404 or 500) is automatically set by Spring.
-        HttpStatus status = getStatus(request);
-        PrintWriter writer = response.getWriter();
         // 统一返回状态码为成功
         response.setStatus(HttpStatus.OK.value());
+        HttpStatus status = getStatus(request);
         if (status == HttpStatus.NOT_FOUND) {
-            writer.write(JSON.toJSONString(ApiResponse.invalidRequestUrl()));
+            throw new ApiException(ApiResponse.invalidRequestUrl());
         } else {
-            writer.write(JSON.toJSONString(ApiResponse.error()));
+            throw new ApiException(ApiResponse.error());
         }
-        writer.flush();
     }
 
 
