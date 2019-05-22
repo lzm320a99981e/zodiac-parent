@@ -1,10 +1,12 @@
 package com.github.lzm320a99981e.component.validation;
 
 import org.hibernate.validator.internal.engine.ConstraintViolationImpl;
+import org.springframework.beans.TypeMismatchException;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 
 import javax.validation.metadata.ConstraintDescriptor;
@@ -56,7 +58,15 @@ public class LocaleValidationExceptionHandler implements ValidationExceptionHand
     }
 
     private ValidationException handle(BindingResult bindingResult) {
-        final ConstraintViolationImpl violation = bindingResult.getAllErrors().get(0).unwrap(ConstraintViolationImpl.class);
+        final ObjectError error = bindingResult.getAllErrors().get(0);
+        if (error.contains(TypeMismatchException.class)) {
+            final TypeMismatchException source = error.unwrap(TypeMismatchException.class);
+            final String requiredType = source.getRequiredType().getSimpleName();
+            final String propertyName = source.getPropertyName();
+            return new ValidationException(errorCode, "参数值[" + source.getValue() + "]类型错误，参数名称[" + propertyName + "]，接收类型：[" + requiredType + "]");
+        }
+
+        final ConstraintViolationImpl violation = error.unwrap(ConstraintViolationImpl.class);
         final ConstraintDescriptor constraintDescriptor = violation.getConstraintDescriptor();
         // @Check 自定义公共校验注解
         if (Objects.equals(Check.class, constraintDescriptor.getAnnotation().annotationType())) {
