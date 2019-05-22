@@ -2,11 +2,13 @@ package com.github.lzm320a99981e.quickly.starter.storage;
 
 import com.alibaba.fastjson.JSON;
 import com.github.lzm320a99981e.quickly.starter.RequestContextHelper;
+import com.github.lzm320a99981e.quickly.starter.api.ApiResponse;
 import com.github.lzm320a99981e.quickly.starter.endpoint.ErrorCode;
 import com.github.lzm320a99981e.quickly.starter.storage.dto.FileDownloadEntry;
 import com.github.lzm320a99981e.quickly.starter.storage.dto.FileDownloadRequest;
 import com.github.lzm320a99981e.quickly.starter.storage.dto.FileUploadRequest;
 import com.github.lzm320a99981e.quickly.starter.storage.dto.FileUploadResponse;
+import com.github.lzm320a99981e.zodiac.tools.Codec;
 import com.github.lzm320a99981e.zodiac.tools.ExceptionHelper;
 import com.github.lzm320a99981e.zodiac.tools.IdGenerator;
 import com.google.common.util.concurrent.*;
@@ -16,8 +18,10 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
+import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -76,11 +80,20 @@ public class StorageManager {
             }
         }
 
-        // 打印上传文件信息
-        log.info("\n++++++++++++++++++++++++++ 上传文件信息 +++++++++++++++++++++++++++\n{}", JSON.toJSONString(fileUploadRequests, true));
-
-        // 异步处理上传的文件
-        handleUpload(fileUploadRequests);
+        // 确定是异步上传还是同步上传
+        boolean async = properties.isAsync();
+        final String asyncParameterValue = request.getParameter(properties.getAsyncParameterName());
+        if (Objects.nonNull(asyncParameterValue)) {
+            async = "true".equalsIgnoreCase(asyncParameterValue.trim());
+        }
+        log.info("\n++++++++++++++++++++++++++ 上传文件信息(" + (async ? "异步" : "同步") + ") +++++++++++++++++++++++++++\n{}", JSON.toJSONString(fileUploadRequests, true));
+        if (async) {
+            // 异步处理上传的文件
+            asyncUpload(fileUploadRequests);
+        } else {
+            // 同步处理上传的文件
+            syncUpload(fileUploadRequests);
+        }
 
         // 返回
         return fileUploadRequests.stream().map(item -> {
@@ -144,11 +157,11 @@ public class StorageManager {
     }
 
     /**
-     * 文件上传处理
+     * 异步上传文件
      *
      * @param fileUploadRequests
      */
-    private void handleUpload(List<FileUploadRequest> fileUploadRequests) {
+    private void asyncUpload(List<FileUploadRequest> fileUploadRequests) {
         for (FileUploadRequest request : fileUploadRequests) {
             final ListeningExecutorService service = MoreExecutors.listeningDecorator(Executors.newSingleThreadExecutor());
             final ListenableFuture<FileUploadRequest> future = service.submit(() -> doUpload(request));
@@ -167,6 +180,22 @@ public class StorageManager {
                     },
                     MoreExecutors.directExecutor()
             );
+        }
+    }
+
+    /**
+     * 同步上传文件
+     *
+     * @param fileUploadRequests
+     */
+    private void syncUpload(List<FileUploadRequest> fileUploadRequests) {
+        for (FileUploadRequest request : fileUploadRequests) {
+            try {
+                doUpload(request);
+                uploadInterceptor.onSuccess(request);
+            } catch (Exception e) {
+                uploadInterceptor.onFailure(request, e);
+            }
         }
     }
 
@@ -207,12 +236,31 @@ public class StorageManager {
             // 单个文件下载
             if (entries.size() == 1) {
                 final FileDownloadEntry entry = entries.get(0);
+                if (request.isBase64Encoded()) {
+                    downloadBase64(entry.getData());
+                    return;
+                }
                 RequestContextHelper.download(entry.getData(), Objects.isNull(downloadName) ? entry.getName() : downloadName);
+                return;
             }
+            // 多文件打包下载
 
         } catch (Exception e) {
             throw ExceptionHelper.wrappedRuntimeException(e);
         }
+    }
+
+    private void downloadBase64(byte[] data) {
+        try {
+            final ApiResponse apiResponse = ApiResponse.success(Codec.createUseUtf8().encodeBase64String(data));
+            final HttpServletResponse response = RequestContextHelper.getResponse();
+            final PrintWriter writer = response.getWriter();
+            writer.write(JSON.toJSONString(apiResponse));
+            writer.flush();
+        } catch (Exception e) {
+            ExceptionHelper.rethrowRuntimeException(e);
+        }
+
     }
 
 }

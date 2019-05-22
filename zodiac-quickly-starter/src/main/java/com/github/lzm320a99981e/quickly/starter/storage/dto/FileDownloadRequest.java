@@ -20,4 +20,9 @@ public class FileDownloadRequest {
      * 下载名称（默认将使用上传时候保存的名称）
      */
     private String downloadName;
+
+    /**
+     * 是否返回base64编码的数据
+     */
+    private boolean base64Encoded = false;
 }

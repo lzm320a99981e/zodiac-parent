@@ -29,4 +29,14 @@ public class StorageProperties {
      * 文件分类存储映射, key：类别，value：存储相对路径
      */
     private Map<String, String> classificationMap;
+
+    /**
+     * 默认配置为异常上传
+     */
+    private boolean async = true;
+
+    /**
+     * 客户端可配置的异步参数名称
+     */
+    private String asyncParameterName = "async";
 }
