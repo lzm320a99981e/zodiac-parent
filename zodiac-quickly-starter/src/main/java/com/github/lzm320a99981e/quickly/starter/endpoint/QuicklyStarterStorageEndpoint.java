@@ -5,7 +5,11 @@ import com.github.lzm320a99981e.quickly.starter.storage.StorageManager;
 import com.github.lzm320a99981e.quickly.starter.storage.dto.FileDownloadRequest;
 import com.github.lzm320a99981e.quickly.starter.storage.dto.FileUploadResponse;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import javax.validation.Valid;
@@ -15,7 +19,7 @@ import java.util.List;
 /**
  * 存储接口
  */
-@RestController
+@Controller
 @RequestMapping("${" + Constants.ENV_PREFIX + "api.router.internal-prefix:/public}")
 public class QuicklyStarterStorageEndpoint {
     @Autowired
