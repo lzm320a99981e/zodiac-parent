@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
+import javax.validation.Valid;
 import java.io.IOException;
 import java.util.List;
 
@@ -43,7 +44,7 @@ public class QuicklyStarterStorageEndpoint {
      * @param request
      */
     @RequestMapping(value = ServiceId.STORAGE_FILE_DOWNLOAD, method = {RequestMethod.POST, RequestMethod.GET})
-    public void download(FileDownloadRequest request) {
+    public void download(@Valid FileDownloadRequest request) {
         storageManager.download(request);
     }
 }

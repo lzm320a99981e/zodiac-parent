@@ -25,4 +25,9 @@ public class FileDownloadRequest {
      * 是否返回base64编码的数据
      */
     private boolean base64Encoded = false;
+
+    /**
+     * 忽略不存在的文件
+     */
+    private boolean ignoreNonExistent = false;
 }

@@ -8,9 +8,7 @@ import com.github.lzm320a99981e.quickly.starter.storage.dto.FileDownloadEntry;
 import com.github.lzm320a99981e.quickly.starter.storage.dto.FileDownloadRequest;
 import com.github.lzm320a99981e.quickly.starter.storage.dto.FileUploadRequest;
 import com.github.lzm320a99981e.quickly.starter.storage.dto.FileUploadResponse;
-import com.github.lzm320a99981e.zodiac.tools.Codec;
-import com.github.lzm320a99981e.zodiac.tools.ExceptionHelper;
-import com.github.lzm320a99981e.zodiac.tools.IdGenerator;
+import com.github.lzm320a99981e.zodiac.tools.*;
 import com.google.common.util.concurrent.*;
 import lombok.extern.slf4j.Slf4j;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -226,12 +224,23 @@ public class StorageManager {
 
     // ============================================ 文件下载 ============================================
     public void download(FileDownloadRequest request) {
-        final List<String> saveKeys = request.getSaveKeys();
-        final String downloadName = request.getDownloadName();
-
         try {
+            final List<String> saveKeys = request.getSaveKeys();
+            final String downloadName = request.getDownloadName();
             // 获取可下载的文件列表
             final List<FileDownloadEntry> entries = downloadInterceptor.keysTransform(saveKeys, properties.getLocation());
+
+            // 是否忽略不存在的文件
+            if (!request.isIgnoreNonExistent() && saveKeys.size() != entries.size()) {
+                final List<String> existedSaveKeys = entries.stream().map(FileDownloadEntry::getSaveKey).collect(Collectors.toList());
+                final String nonExistentSveKeys = String.join(",", saveKeys.stream().filter(item -> !existedSaveKeys.contains(item)).collect(Collectors.toList()));
+                ErrorCode.FILE_DOWNLOAD_4001.throwException(nonExistentSveKeys);
+            }
+
+            // 为找到可下载的文件
+            if (entries.isEmpty()) {
+                ErrorCode.FILE_DOWNLOAD_4001.throwException(String.join(",", saveKeys));
+            }
 
             // 单个文件下载
             if (entries.size() == 1) {
@@ -243,8 +252,16 @@ public class StorageManager {
                 RequestContextHelper.download(entry.getData(), Objects.isNull(downloadName) ? entry.getName() : downloadName);
                 return;
             }
-            // 多文件打包下载
 
+            // 多文件打包下载
+            final Compressor compressor = Compressor.create().handleEntryDuplicateName();
+            entries.forEach(item -> compressor.addCompressEntry(item.getData(), item.getName()));
+            final byte[] data = compressor.compression();
+            if (request.isBase64Encoded()) {
+                downloadBase64(data);
+                return;
+            }
+            RequestContextHelper.download(data, Objects.isNull(downloadName) ? DateUtils.formatNow("yyyyMMddHHmmss") + ".zip" : downloadName + ".zip");
         } catch (Exception e) {
             throw ExceptionHelper.wrappedRuntimeException(e);
         }

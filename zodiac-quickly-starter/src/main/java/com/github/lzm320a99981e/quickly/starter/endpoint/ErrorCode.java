@@ -17,6 +17,7 @@ public enum ErrorCode {
     FILE_UPLOAD_4002("上传文件内容为空，参数名称：[{0}]，文件名称：[{1}]"),
     FILE_UPLOAD_4003("分类信息不存在，分类参数名称：[{0}]，分类参数值：[{1}]"),
     FILE_UPLOAD_4004("覆盖文件不存在，覆盖参数名称：[{0}]，覆盖参数值：[{1}]"),
+    FILE_DOWNLOAD_4001("下载的文件不存在：[{0}]"),
     ;
     private String code;
     private String message;

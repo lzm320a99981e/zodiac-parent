@@ -28,6 +28,7 @@ public class DefaultFileDownloadInterceptor implements FileDownloadInterceptor {
                                 try {
                                     final FileDownloadEntry entry = new FileDownloadEntry();
                                     final File file = item.toFile();
+                                    entry.setSaveKey(file.getName());
                                     entry.setName(file.getName());
                                     entry.setData(Files.readAllBytes(item));
                                     entry.setPath(file.getAbsolutePath().substring(location.getAbsolutePath().length(), file.getAbsolutePath().length() - file.getName().length()));

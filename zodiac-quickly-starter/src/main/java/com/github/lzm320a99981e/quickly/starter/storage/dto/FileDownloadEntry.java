@@ -8,6 +8,10 @@ import lombok.Data;
 @Data
 public class FileDownloadEntry {
     /**
+     * 文件保存Key
+     */
+    private String saveKey;
+    /**
      * 名称
      */
     private String name;
