@@ -44,6 +44,7 @@ public class StorageManager {
         this.uploadInterceptor = Objects.isNull(uploadInterceptor) ? new DefaultFileUploadInterceptor() : uploadInterceptor;
         this.downloadInterceptor = Objects.isNull(downloadInterceptor) ? new DefaultFileDownloadInterceptor() : downloadInterceptor;
     }
+
     // ============================================ 文件上传 ============================================
 
     /**
@@ -223,6 +224,12 @@ public class StorageManager {
     }
 
     // ============================================ 文件下载 ============================================
+
+    /**
+     * 文件下载
+     *
+     * @param request
+     */
     public void download(FileDownloadRequest request) {
         try {
             final List<String> saveKeys = request.getSaveKeys();
@@ -267,6 +274,11 @@ public class StorageManager {
         }
     }
 
+    /**
+     * 下载 base64 编码后的数据
+     *
+     * @param data
+     */
     private void downloadBase64(byte[] data) {
         try {
             final ApiResponse apiResponse = ApiResponse.success(Codec.createUseUtf8().encodeBase64String(data));

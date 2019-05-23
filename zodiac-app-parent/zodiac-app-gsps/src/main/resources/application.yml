@@ -15,6 +15,7 @@ spring:
 # log
 logging:
   root: info
+  org.springframework.data: debug
   com.zodiac.app: debug
   com.github.lzm320a99981e: debug
   file: logs/${spring.application.name}.log

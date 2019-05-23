@@ -19,7 +19,7 @@ import java.util.Objects;
 public class ApiResponseBodyAdvice implements ResponseBodyAdvice<Object> {
     @Override
     public boolean supports(MethodParameter returnType, Class<? extends HttpMessageConverter<?>> converterType) {
-        return true;
+        return !returnType.getMethod().getDeclaringClass().getName().startsWith("springfox.");
     }
 
     @Override
