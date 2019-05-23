@@ -5,6 +5,7 @@ import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.alibaba.fastjson.support.config.FastJsonConfig;
 import com.alibaba.fastjson.support.spring.FastJsonRedisSerializer;
 import com.github.lzm320a99981e.quickly.starter.Constants;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.cache.CacheManager;
@@ -16,15 +17,20 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.cache.RedisCacheConfiguration;
 import org.springframework.data.redis.cache.RedisCacheManager;
 import org.springframework.data.redis.cache.RedisCacheWriter;
+import org.springframework.data.redis.connection.MessageListener;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.listener.ChannelTopic;
+import org.springframework.data.redis.listener.RedisMessageListenerContainer;
 import org.springframework.data.redis.serializer.RedisSerializationContext;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @ConditionalOnMissingBean(RedisTemplate.class)
 @EnableCaching
@@ -35,6 +41,8 @@ public class CacheRedisConfiguration extends CachingConfigurerSupport {
     public CacheRedisProperties cacheRedisProperties() {
         return new CacheRedisProperties();
     }
+
+    //=================================== 缓存配置 ====================================//
 
     /**
      * redis操作模板
@@ -70,7 +78,7 @@ public class CacheRedisConfiguration extends CachingConfigurerSupport {
      * @return
      */
     @Bean
-    public CacheManager redisCacheManager(RedisTemplate<String, Object> redisTemplate, CacheRedisProperties properties) {
+    public CacheManager redisCacheManager(RedisTemplate redisTemplate, CacheRedisProperties properties) {
         RedisCacheWriter redisCacheWriter = RedisCacheWriter.nonLockingRedisCacheWriter(Objects.requireNonNull(redisTemplate.getConnectionFactory()));
         final RedisSerializationContext.SerializationPair keySerializer = RedisSerializationContext.SerializationPair.fromSerializer(redisTemplate.getKeySerializer());
         final RedisSerializationContext.SerializationPair valueSerializer = RedisSerializationContext.SerializationPair.fromSerializer(redisTemplate.getValueSerializer());
@@ -79,16 +87,16 @@ public class CacheRedisConfiguration extends CachingConfigurerSupport {
                 .serializeKeysWith(keySerializer)
                 .serializeValuesWith(valueSerializer);
         // 自定义缓存配置
-        final Map<String, CacheRedisProperties.CacheEntry> cacheEntryMap = properties.getCacheEntryMap();
+        final Map<String, CacheRedisProperties.CacheEntry> cacheNameWithCacheEntryMap = properties.getCacheNameWithCacheEntryMap();
 
         // 不存在自定义缓存配置
-        if (Objects.isNull(cacheEntryMap) || cacheEntryMap.isEmpty()) {
+        if (Objects.isNull(cacheNameWithCacheEntryMap) || cacheNameWithCacheEntryMap.isEmpty()) {
             return new RedisCacheManager(redisCacheWriter, defaultRedisCacheConfiguration);
         }
 
         // 存在自定义缓存配置
         final Map<String, RedisCacheConfiguration> customizeRedisConfigurationMap = new HashMap<>();
-        for (Map.Entry<String, CacheRedisProperties.CacheEntry> entry : cacheEntryMap.entrySet()) {
+        for (Map.Entry<String, CacheRedisProperties.CacheEntry> entry : cacheNameWithCacheEntryMap.entrySet()) {
             final CacheRedisProperties.CacheEntry cacheEntry = entry.getValue();
             final String cacheName = entry.getKey();
             RedisCacheConfiguration config = RedisCacheConfiguration.defaultCacheConfig().serializeKeysWith(keySerializer).serializeValuesWith(valueSerializer);
@@ -130,4 +138,38 @@ public class CacheRedisConfiguration extends CachingConfigurerSupport {
     private SerializerFeature[] getSerializerFeatures() {
         return new SerializerFeature[]{SerializerFeature.SortField, SerializerFeature.MapSortField};
     }
+
+    //=================================== 消息监听 ====================================//
+
+    /**
+     * 消息监听器
+     *
+     * @return
+     */
+    @ConditionalOnBean(RedisMessageHandler.class)
+    @Bean
+    public MessageListener messageListener(RedisTemplate redisTemplate, RedisMessageHandler messageHandler) {
+        return (message, pattern) -> messageHandler.handleMessage(redisTemplate, message, pattern);
+    }
+
+    /**
+     * 消息监听容器
+     *
+     * @param redisConnectionFactory
+     * @param properties
+     * @param messageListener
+     * @return
+     */
+    @ConditionalOnBean(RedisMessageHandler.class)
+    @Bean
+    public RedisMessageListenerContainer redisMessageListenerContainer(RedisConnectionFactory redisConnectionFactory, CacheRedisProperties properties, MessageListener messageListener) {
+        final RedisMessageListenerContainer container = new RedisMessageListenerContainer();
+        container.setConnectionFactory(redisConnectionFactory);
+        List<String> topics = properties.getTopics();
+        if (Objects.nonNull(topics) && !topics.isEmpty()) {
+            container.addMessageListener(messageListener, topics.stream().map(ChannelTopic::new).collect(Collectors.toList()));
+        }
+        return container;
+    }
+
 }
