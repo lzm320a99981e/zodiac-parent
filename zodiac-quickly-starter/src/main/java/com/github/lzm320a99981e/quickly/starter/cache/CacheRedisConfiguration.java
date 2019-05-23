@@ -4,7 +4,9 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.alibaba.fastjson.support.config.FastJsonConfig;
 import com.alibaba.fastjson.support.spring.FastJsonRedisSerializer;
+import com.github.lzm320a99981e.quickly.starter.Constants;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.CachingConfigurerSupport;
 import org.springframework.cache.annotation.EnableCaching;
@@ -20,12 +22,21 @@ import org.springframework.data.redis.serializer.RedisSerializationContext;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 @ConditionalOnMissingBean(RedisTemplate.class)
 @EnableCaching
 @Configuration
-public class QuicklyStarterRedisConfiguration extends CachingConfigurerSupport {
+public class CacheRedisConfiguration extends CachingConfigurerSupport {
+    @Bean
+    @ConfigurationProperties(Constants.ENV_PREFIX + "cache.redis")
+    public CacheRedisProperties cacheRedisProperties() {
+        return new CacheRedisProperties();
+    }
+
+
     /**
      * redis操作模板
      *
@@ -59,7 +70,7 @@ public class QuicklyStarterRedisConfiguration extends CachingConfigurerSupport {
      * @return
      */
     @Bean
-    public CacheManager redisCacheManager(RedisTemplate<String, Object> redisTemplate) {
+    public CacheManager redisCacheManager(RedisTemplate<String, Object> redisTemplate, CacheRedisProperties properties) {
         RedisCacheWriter redisCacheWriter = RedisCacheWriter.nonLockingRedisCacheWriter(Objects.requireNonNull(redisTemplate.getConnectionFactory()));
         final RedisSerializationContext.SerializationPair keySerializer = RedisSerializationContext.SerializationPair.fromSerializer(redisTemplate.getKeySerializer());
         final RedisSerializationContext.SerializationPair valueSerializer = RedisSerializationContext.SerializationPair.fromSerializer(redisTemplate.getValueSerializer());
@@ -67,10 +78,42 @@ public class QuicklyStarterRedisConfiguration extends CachingConfigurerSupport {
         RedisCacheConfiguration defaultRedisCacheConfiguration = RedisCacheConfiguration.defaultCacheConfig()
                 .serializeKeysWith(keySerializer)
                 .serializeValuesWith(valueSerializer);
+        // 自定义缓存配置
+        final Map<String, CacheRedisProperties.CacheEntry> cacheEntryMap = properties.getCacheEntryMap();
 
-        return new RedisCacheManager(redisCacheWriter, defaultRedisCacheConfiguration);
+        // 不存在自定义缓存配置
+        if (Objects.isNull(cacheEntryMap) || cacheEntryMap.isEmpty()) {
+            return new RedisCacheManager(redisCacheWriter, defaultRedisCacheConfiguration);
+        }
+
+        // 存在自定义缓存配置
+        final Map<String, RedisCacheConfiguration> customizeRedisConfigurationMap = new HashMap<>();
+        for (Map.Entry<String, CacheRedisProperties.CacheEntry> entry : cacheEntryMap.entrySet()) {
+            final CacheRedisProperties.CacheEntry cacheEntry = entry.getValue();
+            final String cacheName = entry.getKey();
+            RedisCacheConfiguration config = RedisCacheConfiguration.defaultCacheConfig().serializeKeysWith(keySerializer).serializeValuesWith(valueSerializer);
+            // 是否允许Null值
+            if (!cacheEntry.isAllowNullValues()) {
+                config = config.disableCachingNullValues();
+            }
+            // 过期时间
+            if (Objects.nonNull(cacheEntry.getTtl())) {
+                config = config.entryTtl(cacheEntry.getTtl());
+            }
+            // Key前缀
+            if (Objects.nonNull(cacheEntry.getKeyPrefix())) {
+                config = config.prefixKeysWith(cacheEntry.getKeyPrefix());
+            }
+            customizeRedisConfigurationMap.put(cacheName, config);
+        }
+        return new RedisCacheManager(redisCacheWriter, defaultRedisCacheConfiguration, customizeRedisConfigurationMap);
     }
 
+    /**
+     * 缓存Key生成器
+     *
+     * @return
+     */
     @Override
     public KeyGenerator keyGenerator() {
         return (target, method, params) -> {
