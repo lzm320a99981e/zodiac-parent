@@ -36,7 +36,6 @@ public class CacheRedisConfiguration extends CachingConfigurerSupport {
         return new CacheRedisProperties();
     }
 
-
     /**
      * redis操作模板
      *
@@ -59,7 +58,8 @@ public class CacheRedisConfiguration extends CachingConfigurerSupport {
         redisTemplate.setHashKeySerializer(new StringRedisSerializer());
         redisTemplate.setHashValueSerializer(serializer);
         redisTemplate.afterPropertiesSet();
-
+        // 设置到辅助类
+        CacheRedisHelper.initialize(redisTemplate);
         return redisTemplate;
     }
 
