@@ -30,3 +30,10 @@ gpg --allow-secret-key-import --import zodiac_sec.gpg
 
 zodiac-component-parent
 ```
+
+### 修改版本 & 发布
+```
+mvn versions:set -DnewVersion=1.2
+mvn versions:commit
+mvn clean deploy -e -U -DskipTests -Prelease
+```
