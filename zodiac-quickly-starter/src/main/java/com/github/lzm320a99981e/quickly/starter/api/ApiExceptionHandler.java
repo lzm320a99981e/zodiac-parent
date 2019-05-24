@@ -40,6 +40,7 @@ public class ApiExceptionHandler {
     @ExceptionHandler(value = Exception.class)
     @ResponseBody
     public Object handle(HttpServletRequest request, HttpServletResponse response, Exception e) {
+        log.error("\n+++++++++++++++++++++++++++ 全局异常处理(" + request.getRequestURL() + ") +++++++++++++++++++++++++++", e);
         if (Objects.isNull(this.customizeExceptionHandler)) {
             this.customizeExceptionHandler = new CustomizeDefaultExceptionHandler(validationExceptionHandler);
         }

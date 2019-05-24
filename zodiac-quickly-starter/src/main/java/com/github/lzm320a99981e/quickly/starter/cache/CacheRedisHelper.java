@@ -7,6 +7,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import java.time.Duration;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -15,24 +16,57 @@ import java.util.Set;
 public class CacheRedisHelper {
     private static RedisTemplate<String, Object> redisTemplate;
 
+    /**
+     * 初始化
+     *
+     * @param redisTemplate
+     */
     static void initialize(RedisTemplate<String, Object> redisTemplate) {
         CacheRedisHelper.redisTemplate = redisTemplate;
     }
 
+    /**
+     * 获取缓存值
+     *
+     * @param key
+     * @return
+     */
     public static Object get(Object key) {
         return redisTemplate.opsForValue().get(toCacheKey(key));
     }
 
+    /**
+     * 获取缓存值
+     *
+     * @param key
+     * @param type
+     * @param <T>
+     * @return
+     */
     public static <T> T get(Object key, Class<T> type) {
         final Object cacheValue = get(key);
+        if (Objects.isNull(cacheValue)) {
+            return null;
+        }
         if (CharSequence.class.isAssignableFrom(cacheValue.getClass())) {
             return JSON.parseObject(cacheValue.toString(), type);
         }
         return JSON.parseObject(JSON.toJSONString(cacheValue), type);
     }
 
+    /**
+     * 获取缓存值
+     *
+     * @param key
+     * @param type
+     * @param <T>
+     * @return
+     */
     public static <T> List<T> getArray(Object key, Class<T> type) {
         final Object cacheValue = get(key);
+        if (Objects.isNull(cacheValue)) {
+            return null;
+        }
         if (CharSequence.class.isAssignableFrom(cacheValue.getClass())) {
             return JSON.parseArray(cacheValue.toString(), type);
         }
@@ -142,11 +176,21 @@ public class CacheRedisHelper {
         return redisTemplate.delete(keys);
     }
 
-
+    /**
+     * 获取模板
+     *
+     * @return
+     */
     public static RedisTemplate<String, Object> getRedisTemplate() {
         return redisTemplate;
     }
 
+    /**
+     * 转换为缓存Key
+     *
+     * @param key
+     * @return
+     */
     private static String toCacheKey(Object key) {
         if (CharSequence.class.isAssignableFrom(key.getClass())) {
             return key.toString();

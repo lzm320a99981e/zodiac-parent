@@ -35,3 +35,10 @@ quickly:
       classification-map:
         100101: 'personal'
         100201: 'expert'
+    cache:
+      redis:
+        cache-name-with-cache-entry-map:
+          test01:
+            ttl: 30s
+            key-prefix: test01-30s
+        topics: ['__keyevent@0__:expired']
