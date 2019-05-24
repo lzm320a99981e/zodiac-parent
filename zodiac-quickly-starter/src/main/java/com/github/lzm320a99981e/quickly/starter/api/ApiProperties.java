@@ -2,6 +2,8 @@ package com.github.lzm320a99981e.quickly.starter.api;
 
 import lombok.Data;
 
+import java.util.List;
+
 /**
  * API 配置项
  */
@@ -26,6 +28,16 @@ public class ApiProperties {
      * 公共状态码
      */
     private StatusCode statusCode = new StatusCode();
+
+    /**
+     * 请求体处理包含的包
+     */
+    private List<String> requestBodyAdvicePackages;
+
+    /**
+     * 响应体处理包含的包
+     */
+    private List<String> responseBodyAdvicePackages;
 
     /**
      * 路由配置

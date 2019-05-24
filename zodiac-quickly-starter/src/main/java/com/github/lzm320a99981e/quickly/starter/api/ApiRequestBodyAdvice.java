@@ -3,6 +3,7 @@ package com.github.lzm320a99981e.quickly.starter.api;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.HttpInputMessage;
 import org.springframework.http.converter.HttpMessageConverter;
@@ -12,15 +13,22 @@ import org.springframework.web.servlet.mvc.method.annotation.RequestBodyAdviceAd
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
+/**
+ * Api请求体切面
+ */
 @Slf4j
 @ControllerAdvice
 public class ApiRequestBodyAdvice extends RequestBodyAdviceAdapter {
+    @Autowired
+    private ApiProperties apiProperties;
 
     @Override
     public boolean supports(MethodParameter methodParameter, Type targetType, Class<? extends HttpMessageConverter<?>> converterType) {
-        return !methodParameter.getMethod().getDeclaringClass().getName().startsWith("springfox.");
+        return supports(methodParameter.getMethod(), apiProperties.getRequestBodyAdvicePackages());
     }
 
     @Override
@@ -29,6 +37,12 @@ public class ApiRequestBodyAdvice extends RequestBodyAdviceAdapter {
         return body;
     }
 
+    /**
+     * 方法签名
+     *
+     * @param method
+     * @return
+     */
     static String getMethodDef(Method method) {
         StringBuilder logText = new StringBuilder();
         logText.append(method.getReturnType().getSimpleName() + " ")
@@ -37,5 +51,20 @@ public class ApiRequestBodyAdvice extends RequestBodyAdviceAdapter {
                 .append(method.getName())
                 .append("(" + (Arrays.asList(method.getParameterTypes()).stream().map(Class::getSimpleName).collect(Collectors.joining(", "))) + ")");
         return logText.toString();
+    }
+
+    /**
+     * 是否支持请求体处理
+     *
+     * @param method
+     * @param packages
+     * @return
+     */
+    static boolean supports(Method method, List<String> packages) {
+        final String className = method.getDeclaringClass().getName();
+        if (Objects.isNull(packages) || packages.isEmpty()) {
+            return !className.startsWith("springfox.");
+        }
+        return packages.stream().anyMatch(pkg -> className.startsWith(pkg) || className.matches(pkg));
     }
 }

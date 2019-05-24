@@ -3,6 +3,7 @@ package com.github.lzm320a99981e.quickly.starter.api;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
@@ -13,13 +14,18 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
 
 import java.util.Objects;
 
-
+/**
+ * Api响应体切面
+ */
 @Slf4j
 @ControllerAdvice
 public class ApiResponseBodyAdvice implements ResponseBodyAdvice<Object> {
+    @Autowired
+    private ApiProperties apiProperties;
+
     @Override
     public boolean supports(MethodParameter returnType, Class<? extends HttpMessageConverter<?>> converterType) {
-        return !returnType.getMethod().getDeclaringClass().getName().startsWith("springfox.");
+        return ApiRequestBodyAdvice.supports(returnType.getMethod(), apiProperties.getResponseBodyAdvicePackages());
     }
 
     @Override

@@ -24,6 +24,7 @@ public class BaseTests {
 
     @Test
     public void testDeploy() throws IOException {
+        // mvn deploy:deploy-file -DgroupId=app.xxx -DartifactId=xxx -Dversion=1.0 -Dpackaging=jar -Dfile=D:\java\picture_server\target\xxx-1.0-SNAPSHOT.jar -Durl=http://localhost:8081/nexus/content/repositories/releases/ -DrepositoryId=releases
         String responseDir = "/Users/zhangguangyong/.m2/repository";
         final Path path = Paths.get(responseDir, "org/apache/commons");
         final List<Path> list = Files.walk(path).filter(item -> item.toFile().isFile() && item.toFile().getName().endsWith(".jar")).collect(Collectors.toList());
@@ -42,6 +43,12 @@ public class BaseTests {
             cmd.append(mvnDeployCmd).append(System.lineSeparator());
         }
         System.out.println(cmd.toString());
-        // mvn deploy:deploy-file -DgroupId=app.xxx -DartifactId=xxx -Dversion=1.0 -Dpackaging=jar -Dfile=D:\java\picture_server\target\xxx-1.0-SNAPSHOT.jar -Durl=http://localhost:8081/nexus/content/repositories/releases/ -DrepositoryId=releases
+    }
+
+    @Test
+    public void testAdviceSupports() {
+        String pkg = "com.github.lzm320a99981e.quickly.starter.api";
+        System.out.println(pkg.startsWith("com.github.lzm320a99981e"));
+        System.out.println(pkg.matches("com.github.lzm320a99981e"));
     }
 }
