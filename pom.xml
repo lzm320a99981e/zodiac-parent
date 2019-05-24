@@ -7,7 +7,7 @@
     <groupId>com.github.lzm320a99981e</groupId>
     <artifactId>zodiac-parent</artifactId>
     <packaging>pom</packaging>
-    <version>1.0</version>
+    <version>1.1</version>
 
     <name>zodiac-parent</name>
     <url>https://github.com/lzm320a99981e/zodiac</url>
@@ -185,12 +185,6 @@
                 <groupId>commons-codec</groupId>
                 <artifactId>commons-codec</artifactId>
                 <version>1.12</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.lz4</groupId>
-                <artifactId>lz4-java</artifactId>
-                <version>1.5.1</version>
             </dependency>
 
             <dependency>
@@ -529,7 +523,7 @@
                 </plugins>
             </build>
 
-            <!-- deploy -->
+            <!-- deploy to oss -->
             <distributionManagement>
                 <snapshotRepository>
                     <id>oss</id>
@@ -547,31 +541,43 @@
         </profile>
     </profiles>
 
-<!--    <repositories>-->
-<!--        <repository>-->
-<!--            <id>maven-public</id>-->
-<!--            <name>Public Repositories</name>-->
-<!--            <url>http://zodiac:8001/repository/maven-public/</url>-->
-<!--            <releases>-->
-<!--                <enabled>true</enabled>-->
-<!--            </releases>-->
-<!--            <snapshots>-->
-<!--                <enabled>true</enabled>-->
-<!--            </snapshots>-->
-<!--        </repository>-->
-<!--    </repositories>-->
-<!--    <pluginRepositories>-->
-<!--        <pluginRepository>-->
-<!--            <id>maven-public</id>-->
-<!--            <name>Public Repositories</name>-->
-<!--            <url>http://zodiac:8001/repository/maven-public/</url>-->
-<!--            <releases>-->
-<!--                <enabled>true</enabled>-->
-<!--            </releases>-->
-<!--            <snapshots>-->
-<!--                <enabled>true</enabled>-->
-<!--            </snapshots>-->
-<!--        </pluginRepository>-->
-<!--    </pluginRepositories>-->
+    <repositories>
+        <repository>
+            <id>maven-public</id>
+            <name>Public Repositories</name>
+            <url>http://zodiac:8001/repository/maven-public/</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
+    <pluginRepositories>
+        <pluginRepository>
+            <id>maven-public</id>
+            <name>Public Repositories</name>
+            <url>http://zodiac:8001/repository/maven-public/</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </pluginRepository>
+    </pluginRepositories>
+
+    <!-- deploy to nexus -->
+    <distributionManagement>
+        <snapshotRepository>
+            <id>nexus</id>
+            <url>http://zodiac:8001/repository/maven-snapshots/</url>
+        </snapshotRepository>
+        <repository>
+            <id>nexus</id>
+            <url>http://zodiac:8001/repository/maven-releases/</url>
+        </repository>
+    </distributionManagement>
 
 </project>

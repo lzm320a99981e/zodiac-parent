@@ -5,10 +5,10 @@
     <parent>
         <artifactId>zodiac-cloud-parent</artifactId>
         <groupId>com.github.lzm320a99981e</groupId>
-        <version>1.0</version>
+        <version>1.1</version>
     </parent>
     <artifactId>zodiac-cloud-registration</artifactId>
-    <version>1.0</version>
+    <version>1.1</version>
     <name>zodiac-cloud-registration</name>
     <description>registration</description>
 
@@ -17,7 +17,7 @@
             <dependency>
                 <groupId>com.github.lzm320a99981e</groupId>
                 <artifactId>zodiac-cloud-dependencies</artifactId>
-                <version>1.0</version>
+                <version>1.1</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>

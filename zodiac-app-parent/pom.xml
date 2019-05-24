@@ -5,7 +5,7 @@
     <parent>
         <artifactId>zodiac-parent</artifactId>
         <groupId>com.github.lzm320a99981e</groupId>
-        <version>1.0</version>
+        <version>1.1</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <packaging>pom</packaging>
@@ -14,4 +14,7 @@
     <modules>
         <module>zodiac-app-gsps</module>
     </modules>
+    <properties>
+        <maven.deploy.skip>true</maven.deploy.skip>
+    </properties>
 </project>
