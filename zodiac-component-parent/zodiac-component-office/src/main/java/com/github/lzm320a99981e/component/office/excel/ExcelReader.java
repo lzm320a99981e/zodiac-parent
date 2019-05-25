@@ -1,5 +1,7 @@
 package com.github.lzm320a99981e.component.office.excel;
 
+import com.github.lzm320a99981e.component.office.excel.metadata.Point;
+import com.github.lzm320a99981e.component.office.excel.metadata.Table;
 import org.apache.poi.ss.usermodel.*;
 
 import java.io.File;
@@ -14,15 +16,15 @@ public class ExcelReader {
         return new ExcelReader();
     }
 
-    private List<Table> tables = new ArrayList<>();
+    private List<com.github.lzm320a99981e.component.office.excel.metadata.Table> tables = new ArrayList<>();
     private List<Point> points = new ArrayList<>();
 
-    public ExcelReader addTable(Table table) {
+    public ExcelReader addTable(com.github.lzm320a99981e.component.office.excel.metadata.Table table) {
         this.tables.add(table);
         return this;
     }
 
-    public ExcelReader addTables(Collection<Table> tables) {
+    public ExcelReader addTables(Collection<com.github.lzm320a99981e.component.office.excel.metadata.Table> tables) {
         this.tables.addAll(tables);
         return this;
     }
