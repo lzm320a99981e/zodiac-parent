@@ -6,9 +6,13 @@ import org.junit.Test;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Iterator;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 public class ExcelTemplateTests {
     static final String basePath = System.getProperty("user.dir");
@@ -59,5 +63,12 @@ public class ExcelTemplateTests {
         while (matcher.find()){
             System.out.println(matcher.group());
         }
+    }
+
+    @Test
+    public void testFrequency() {
+        List<Integer> numbers = Arrays.asList(new Integer[]{1,2,1,3,4,4});
+        numbers.stream().filter(i -> Collections.frequency(numbers, i) >1)
+                .collect(Collectors.toSet()).forEach(System.out::println);
     }
 }
