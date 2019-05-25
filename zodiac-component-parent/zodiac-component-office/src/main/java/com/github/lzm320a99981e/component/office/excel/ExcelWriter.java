@@ -3,6 +3,7 @@ package com.github.lzm320a99981e.component.office.excel;
 import com.github.lzm320a99981e.component.office.excel.metadata.Metadata;
 import com.github.lzm320a99981e.component.office.excel.metadata.Point;
 import com.github.lzm320a99981e.component.office.excel.metadata.Table;
+import com.github.lzm320a99981e.zodiac.tools.ExceptionHelper;
 import com.google.common.base.Preconditions;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -10,8 +11,10 @@ import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.*;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileOutputStream;
+import java.io.FileInputStream;
+import java.io.InputStream;
 import java.util.*;
 import java.util.stream.IntStream;
 
@@ -44,22 +47,38 @@ public class ExcelWriter {
         return this;
     }
 
-    public void write(File file) throws Exception {
+    public byte[] write(InputStream template) {
         if (tableDataMap.isEmpty() && pointDataMap.isEmpty()) {
             throw new RuntimeException("未添加任何数据，请添加数据后操作");
         }
+        try {
+            // 创建工作本
+            Workbook workbook = WorkbookFactory.create(template);
 
-        // 创建工作本
-        final Workbook workbook = WorkbookFactory.create(file);
+            // 表格数据写入
+            tableDataMap.values().forEach(item -> writeTable(workbook, item));
 
-        // 表格数据写入
-        tableDataMap.values().forEach(item -> writeTable(workbook, item));
+            // 单元格数据写入
+            pointDataMap.values().forEach(item -> writePoint(workbook, item));
 
-        // 单元格数据写入
-        pointDataMap.values().forEach(item -> writePoint(workbook, item));
+            // 获取写入后的数据
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            workbook.write(outputStream);
+            workbook.close();
+            return outputStream.toByteArray();
+        } catch (Exception e) {
+            throw ExceptionHelper.wrappedRuntimeException(e);
+        }
+    }
 
-        workbook.write(new FileOutputStream("test001.xlsx"));
-        workbook.close();
+    public byte[] write(File template) {
+        try (FileInputStream inputStream = new FileInputStream(template)) {
+            byte[] data = write(inputStream);
+            inputStream.close();
+            return data;
+        } catch (Exception e) {
+            throw ExceptionHelper.wrappedRuntimeException(e);
+        }
     }
 
     private void writePoint(Workbook workbook, PointDataEntry dataEntry) {
