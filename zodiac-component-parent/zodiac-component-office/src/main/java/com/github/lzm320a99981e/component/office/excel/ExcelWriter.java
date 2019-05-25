@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import org.apache.poi.ss.usermodel.*;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -60,7 +61,8 @@ public class ExcelWriter {
 
             }
         });
-
+        workbook.write(new FileOutputStream("test001.xlsx"));
+        workbook.close();
     }
 
     @Data

@@ -1,15 +1,16 @@
 package com.github.lzm320a99981e.component.office;
 
+import com.alibaba.fastjson.JSONObject;
+import com.github.lzm320a99981e.component.office.excel.ExcelWriter;
+import com.github.lzm320a99981e.component.office.excel.metadata.Point;
+import com.github.lzm320a99981e.component.office.excel.metadata.Table;
 import org.apache.poi.ss.usermodel.*;
 import org.junit.Test;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -38,7 +39,7 @@ public class ExcelTemplateTests {
     @Test
     public void test2() throws IOException {
         final Workbook workbook = WorkbookFactory.create(new File(resources, "test.xlsx"));
-        final RichTextString richTextString= workbook.getSheetAt(0).getRow(11).getCell(0).getRichStringCellValue();
+        final RichTextString richTextString = workbook.getSheetAt(0).getRow(11).getCell(0).getRichStringCellValue();
         final int runs = richTextString.numFormattingRuns();
         System.out.println(runs);
     }
@@ -60,15 +61,34 @@ public class ExcelTemplateTests {
         String var = "姓名：{name}，年龄：{{age}}岁，省份证号：{goods}";
         final Pattern pattern = Pattern.compile("\\{[^{}]+}");
         final Matcher matcher = pattern.matcher(var);
-        while (matcher.find()){
+        while (matcher.find()) {
             System.out.println(matcher.group());
         }
     }
 
     @Test
     public void testFrequency() {
-        List<Integer> numbers = Arrays.asList(new Integer[]{1,2,1,3,4,4});
-        numbers.stream().filter(i -> Collections.frequency(numbers, i) >1)
+        List<Integer> numbers = Arrays.asList(new Integer[]{1, 2, 1, 3, 4, 4});
+        numbers.stream().filter(i -> Collections.frequency(numbers, i) > 1)
                 .collect(Collectors.toSet()).forEach(System.out::println);
+    }
+
+    @Test
+    public void test3() throws Exception {
+        Table table = Table.create(0, 2, "");
+        table.setColumns(
+                Arrays.asList(
+                        Point.create(table.getSheetIndex(), table.getStartRow(), 1, "name")
+                )
+        );
+
+        ArrayList<Map<String, Object>> data = new ArrayList<>();
+        for (int i = 0; i < 10; i++) {
+            JSONObject rowData = new JSONObject();
+            rowData.put("name", "zhangsan");
+            data.add(rowData);
+        }
+        File file = new File(resources, "test.xlsx");
+        ExcelWriter.create().addTable(table, data).write(file);
     }
 }
