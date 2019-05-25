@@ -4,6 +4,10 @@ import com.google.common.base.Preconditions;
 import lombok.Data;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * 表格定义
@@ -56,6 +60,26 @@ public class Table implements Metadata {
 
     public static Table create(Integer sheetIndex, Integer startRow, String dataKey) {
         return new Table(sheetIndex, startRow, dataKey);
+    }
+
+
+    private Map<String, Integer> dataKeyWithColumnNumberMap;
+    private Set<String> dataKeys;
+
+    public Map<String, Integer> getDataKeyWithColumnNumberMap() {
+        if (Objects.nonNull(this.dataKeyWithColumnNumberMap)) {
+            return this.dataKeyWithColumnNumberMap;
+        }
+        this.dataKeyWithColumnNumberMap = this.getColumns().stream().collect(Collectors.toMap(Point::getDataKey, Point::getColumnNumber));
+        return this.dataKeyWithColumnNumberMap;
+    }
+
+    public Set<String> getDataKeys() {
+        if (Objects.nonNull(this.dataKeys)) {
+            return this.dataKeys;
+        }
+        this.dataKeys = getDataKeyWithColumnNumberMap().keySet();
+        return this.dataKeys;
     }
 }
 
