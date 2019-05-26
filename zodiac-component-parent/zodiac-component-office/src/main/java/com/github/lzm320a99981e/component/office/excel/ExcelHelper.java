@@ -18,12 +18,12 @@ public class ExcelHelper {
 
 
     /**
-     * 断言Excel是xls类型（2003）
+     * 断言Excel是xlsx类型（2007）
      *
      * @param input
      * @return
      */
-    public static boolean isXls(InputStream input) {
+    public static boolean isXssf(InputStream input) {
         try {
             new XSSFWorkbook(input);
             return false;
@@ -31,16 +31,6 @@ public class ExcelHelper {
             // ignore
             return true;
         }
-    }
-
-    /**
-     * 断言Excel是Xlsx类型（2007）
-     *
-     * @param input
-     * @return
-     */
-    public static boolean isXlsx(InputStream input) {
-        return !isXls(input);
     }
 
     /**
@@ -53,7 +43,7 @@ public class ExcelHelper {
         if (null == cell) {
             return null;
         }
-        CellType cellType = cell.getCellType();
+        CellType cellType = cell.getCellTypeEnum();
         if (CellType.STRING == cellType) {
             return cell.getRichStringCellValue().getString();
         }
@@ -158,6 +148,9 @@ public class ExcelHelper {
      * @param copyValue
      */
     public static void copyRow(Row source, Row target, boolean copyValue) {
+        // 复制高度
+        target.setHeightInPoints(source.getHeightInPoints());
+
         // 复制单元格
         Iterator<Cell> iterator = source.cellIterator();
         short firstCellNum = source.getFirstCellNum();

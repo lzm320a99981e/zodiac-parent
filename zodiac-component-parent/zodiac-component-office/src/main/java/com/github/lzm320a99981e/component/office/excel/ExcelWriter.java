@@ -16,6 +16,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.IntStream;
 
 /**
@@ -106,11 +107,49 @@ public class ExcelWriter {
         }
 
         Sheet sheet = findSheet(workbook, table);
-        List<Map<String, Object>> dataList = new ArrayList<>(data);
+        List<Map<String, Object>> dataList = List.class.isAssignableFrom(data.getClass()) ? (List<Map<String, Object>>) data : new ArrayList<>(data);
         int dataSize = dataList.size();
-        Integer startRow = table.getStartRow();
+        Integer startRowNumber = table.getStartRow();
+        AtomicBoolean shiftRows = new AtomicBoolean(false);
 
-        IntStream.range(startRow, dataSize).forEach(i -> writeRow(ExcelHelper.createRowIfNonExistent(sheet, i), table, dataList.get(i - startRow)));
+        IntStream.range(startRowNumber, dataSize).forEach(i -> {
+            Row row = sheet.getRow(i);
+            Map<String, Object> rowData = dataList.get(i - startRowNumber);
+            // 空行处理
+            if (Objects.isNull(row)) {
+                Row createdRow = sheet.createRow(i);
+                // 复制上一行的属性
+                if (i > startRowNumber) {
+                    ExcelHelper.copyRow(sheet.getRow(i - 1), createdRow);
+                }
+                writeRow(createdRow, table, rowData);
+                return;
+            }
+
+            // 非空行，需要判断是否需要进行移动（判断依据：行的单元格已有数据，并且包含在需要填充数据的单元格）
+            if (!shiftRows.get() && needShiftRow(row, table)) {
+                sheet.shiftRows(i, sheet.getLastRowNum(), dataSize - i);
+                shiftRows.set(true);
+            }
+
+            // 已移动行，移动开始 到 移动结束之间的行都是空行，需要创建
+            if (shiftRows.get()) {
+                Row createdRow = sheet.createRow(i);
+                ExcelHelper.copyRow(sheet.getRow(i - 1), createdRow);
+                writeRow(createdRow, table, rowData);
+                return;
+            }
+
+            // 未移动行且行非空
+            writeRow(row, table, rowData);
+        });
+    }
+
+    private boolean needShiftRow(Row row, Table table) {
+        return table.getDataKeyWithColumnNumberMap().values().stream().anyMatch(item -> {
+            Cell cell = row.getCell(item);
+            return Objects.nonNull(cell) && Objects.nonNull(ExcelHelper.getCellValue(cell));
+        });
     }
 
     private void writeRow(Row row, Table table, Map<String, Object> data) {

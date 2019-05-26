@@ -8,7 +8,10 @@ import org.apache.poi.ss.usermodel.*;
 import org.junit.Test;
 
 import java.io.File;
-import java.io.IOException;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.regex.Matcher;
@@ -20,7 +23,7 @@ public class ExcelTemplateTests {
     static final File resources = Paths.get(basePath, "src/test/resources").toFile();
 
     @Test
-    public void test() throws IOException {
+    public void test() throws Exception {
         final Workbook workbook = WorkbookFactory.create(new File(resources, "test.xlsx"));
         System.out.println(workbook);
         final Sheet sheet = workbook.getSheetAt(0);
@@ -37,7 +40,7 @@ public class ExcelTemplateTests {
     }
 
     @Test
-    public void test2() throws IOException {
+    public void test2() throws Exception {
         final Workbook workbook = WorkbookFactory.create(new File(resources, "test.xlsx"));
         final RichTextString richTextString = workbook.getSheetAt(0).getRow(11).getCell(0).getRichStringCellValue();
         final int runs = richTextString.numFormattingRuns();
@@ -75,20 +78,44 @@ public class ExcelTemplateTests {
 
     @Test
     public void test3() throws Exception {
-        Table table = Table.create(0, 2, "");
+        Table table = Table.create(0, 1, "");
+        Integer sheetIndex = table.getSheetIndex();
+        Integer startRow = table.getStartRow();
+        // 姓名	年龄	性别	出生
         table.setColumns(
                 Arrays.asList(
-                        Point.create(table.getSheetIndex(), table.getStartRow(), 1, "name")
+                        Point.create(sheetIndex, startRow, 0, "name"),
+                        Point.create(sheetIndex, startRow, 2, "age"),
+                        Point.create(sheetIndex, startRow, 3, "birth")
                 )
         );
 
-        ArrayList<Map<String, Object>> data = new ArrayList<>();
+        List<Map<String, Object>> data = new ArrayList<>();
         for (int i = 0; i < 10; i++) {
             JSONObject rowData = new JSONObject();
-            rowData.put("name", "zhangsan");
+            rowData.put("name", "zhangsan" + i);
+            rowData.put("age", "zhangsan" + i);
+            rowData.put("birth", "zhangsan" + i);
             data.add(rowData);
         }
-        File file = new File(resources, "test.xlsx");
-        ExcelWriter.create().addTable(table, data).write(file);
+        File template = new File(resources, "test.xlsx");
+        byte[] bytes = ExcelWriter.create().addTable(table, data).write(template);
+        Files.write(Paths.get(template.getParentFile().getAbsolutePath(), "output.xlsx"), bytes);
+    }
+
+    @Test
+    public void test4() throws Exception {
+        File template = new File(resources, "test.xlsx");
+        FileInputStream input = new FileInputStream(template);
+        Workbook workbook = WorkbookFactory.create(input);
+        Sheet sheet = workbook.getSheetAt(0);
+        sheet.shiftRows(1, sheet.getLastRowNum(), 5, true, false);
+        Path output = Paths.get(template.getParentFile().getAbsolutePath(), "output.xlsx");
+        FileOutputStream outputStream = new FileOutputStream(output.toFile());
+
+        workbook.write(outputStream);
+        workbook.close();
+        outputStream.close();
+        input.close();
     }
 }
