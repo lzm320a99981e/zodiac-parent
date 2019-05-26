@@ -24,10 +24,6 @@ public class Table implements Metadata {
      */
     private Integer startRow;
     /**
-     * 表格大小
-     */
-    private Integer size;
-    /**
      * 表格列
      */
     private List<Point> columns;
@@ -36,19 +32,32 @@ public class Table implements Metadata {
      */
     private String dataKey;
 
-    public Table(String sheetName, Integer startRow, String dataKey) {
-        this(startRow, dataKey);
+    public Table(String sheetName, Integer startRow) {
         this.sheetName = Preconditions.checkNotNull(sheetName);
+        this.startRow = Preconditions.checkNotNull(startRow);
+    }
+
+    public Table(Integer sheetIndex, Integer startRow) {
+        this.sheetIndex = Preconditions.checkNotNull(sheetIndex);
+        this.startRow = Preconditions.checkNotNull(startRow);
+    }
+
+    public Table(String sheetName, Integer startRow, String dataKey) {
+        this(sheetName, startRow);
+        this.dataKey = dataKey;
     }
 
     public Table(Integer sheetIndex, Integer startRow, String dataKey) {
-        this(startRow, dataKey);
-        this.sheetIndex = Preconditions.checkNotNull(sheetIndex);
+        this(sheetIndex, startRow);
+        this.dataKey = dataKey;
     }
 
-    public Table(Integer startRow, String dataKey) {
-        this.startRow = Preconditions.checkNotNull(startRow);
-        this.dataKey = Preconditions.checkNotNull(dataKey);
+    public static Table create(String sheetName, Integer startRow) {
+        return new Table(sheetName, startRow);
+    }
+
+    public static Table create(Integer sheetIndex, Integer startRow) {
+        return new Table(sheetIndex, startRow);
     }
 
     public static Table create(String sheetName, Integer startRow, String dataKey) {
@@ -61,6 +70,7 @@ public class Table implements Metadata {
 
 
     private Map<String, Integer> dataKeyWithColumnNumberMap;
+
     public Map<String, Integer> getDataKeyWithColumnNumberMap() {
         if (Objects.nonNull(this.dataKeyWithColumnNumberMap)) {
             return this.dataKeyWithColumnNumberMap;

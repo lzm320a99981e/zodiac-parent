@@ -4,6 +4,7 @@ import com.github.lzm320a99981e.component.office.excel.metadata.Metadata;
 import com.github.lzm320a99981e.component.office.excel.metadata.Point;
 import com.github.lzm320a99981e.component.office.excel.metadata.Table;
 import com.github.lzm320a99981e.zodiac.tools.ExceptionHelper;
+import com.github.lzm320a99981e.zodiac.tools.IdGenerator;
 import com.google.common.base.Preconditions;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -58,7 +59,7 @@ public class ExcelWriter {
      * @return
      */
     public ExcelWriter addTable(Table table, List<Map<String, Object>> data) {
-        Preconditions.checkState(!tableDataMap.containsKey(table.getDataKey()), "已存在的 dataKey -> %s", table.getDataKey());
+        table.setDataKey(IdGenerator.uuid32());
         this.tableDataMap.put(table.getDataKey(), new TableDataEntry(table, data));
         return this;
     }
@@ -101,6 +102,9 @@ public class ExcelWriter {
      * @return
      */
     public ExcelWriter addPoint(Point point, Object data) {
+        if (Objects.isNull(point.getDataKey())) {
+            point.setDataKey(IdGenerator.uuid32());
+        }
         Preconditions.checkState(!tableDataMap.containsKey(point.getDataKey()), "已存在的 dataKey -> %s", point.getDataKey());
         this.pointDataMap.put(point.getDataKey(), new PointDataEntry(point, data));
         return this;
@@ -132,11 +136,11 @@ public class ExcelWriter {
             // 创建工作本
             Workbook workbook = WorkbookFactory.create(template);
 
-            // 写入表格数据
-            this.tableDataMap.values().forEach(item -> writeTable(workbook, item));
-
             // 写入单元格数据
             this.pointDataMap.values().forEach(item -> writePoint(workbook, item));
+
+            // 写入表格数据
+            this.tableDataMap.values().forEach(item -> writeTable(workbook, item));
 
             // 获取写入后的数据
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();

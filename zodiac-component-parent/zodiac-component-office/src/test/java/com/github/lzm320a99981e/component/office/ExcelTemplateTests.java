@@ -79,7 +79,7 @@ public class ExcelTemplateTests {
 
     @Test
     public void test3() throws Exception {
-        Table table = Table.create(0, 1, "vv");
+        Table table = Table.create(0, 1);
         Integer sheetIndex = table.getSheetIndex();
         Integer startRow = table.getStartRow();
         // 姓名	年龄	性别	出生
@@ -91,7 +91,7 @@ public class ExcelTemplateTests {
                 )
         );
 
-        Table table1 = Table.create(0, 7, "xx");
+        Table table1 = Table.create(0, 7);
         Integer sheetIndex1 = table.getSheetIndex();
         Integer startRow1 = table.getStartRow();
         // 姓名	年龄	性别	出生
@@ -115,6 +115,9 @@ public class ExcelTemplateTests {
         byte[] bytes = ExcelWriter.create()
                 .addTable(table, data, TableCellMergeStrategy.REPEAT)
                 .addTable(table1, data, TableCellMergeStrategy.REPEAT)
+                .addPoint(Point.create(sheetIndex, 10, 1), "熊逸")
+                .addPoint(Point.create(sheetIndex, 11, 1), "熊逸1234")
+                .addPoint(Point.create(sheetIndex, 12, 1), "234234234324")
                 .write(template);
         Files.write(Paths.get(template.getParentFile().getAbsolutePath(), "output.xlsx"), bytes);
     }

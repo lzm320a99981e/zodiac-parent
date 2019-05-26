@@ -29,20 +29,34 @@ public class Point implements Metadata {
      */
     private String dataKey;
 
-    private Point(String sheetName, Integer rowNumber, Integer columnNumber, String dataKey) {
-        this(rowNumber, columnNumber, dataKey);
+    private Point(String sheetName, Integer rowNumber, Integer columnNumber) {
         this.sheetName = Preconditions.checkNotNull(sheetName);
+        this.rowNumber = Preconditions.checkNotNull(rowNumber);
+        this.columnNumber = Preconditions.checkNotNull(columnNumber);
+    }
+
+    private Point(Integer sheetIndex, Integer rowNumber, Integer columnNumber) {
+        this.sheetIndex = Preconditions.checkNotNull(sheetIndex);
+        this.rowNumber = Preconditions.checkNotNull(rowNumber);
+        this.columnNumber = Preconditions.checkNotNull(columnNumber);
     }
 
     private Point(Integer sheetIndex, Integer rowNumber, Integer columnNumber, String dataKey) {
-        this(rowNumber, columnNumber, dataKey);
-        this.sheetIndex = Preconditions.checkNotNull(sheetIndex);
+        this(sheetIndex, rowNumber, columnNumber);
+        this.dataKey = Preconditions.checkNotNull(dataKey);
     }
 
-    private Point(Integer rowNumber, Integer columnNumber, String dataKey) {
-        this.rowNumber = Preconditions.checkNotNull(rowNumber);
-        this.columnNumber = Preconditions.checkNotNull(columnNumber);
+    private Point(String sheetName, Integer rowNumber, Integer columnNumber, String dataKey) {
+        this(sheetName, rowNumber, columnNumber);
         this.dataKey = Preconditions.checkNotNull(dataKey);
+    }
+
+    public static Point create(String sheetName, Integer rowNumber, Integer columnNumber) {
+        return new Point(sheetName, rowNumber, columnNumber);
+    }
+
+    public static Point create(Integer sheetIndex, Integer rowNumber, Integer columnNumber) {
+        return new Point(sheetIndex, rowNumber, columnNumber);
     }
 
     public static Point create(String sheetName, Integer rowNumber, Integer columnNumber, String dataKey) {
