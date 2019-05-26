@@ -10,6 +10,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.ss.util.CellRangeAddress;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -143,6 +144,11 @@ public class ExcelWriter {
             // 未移动行且行非空
             writeRow(row, table, rowData);
         });
+
+        // 合并单元格处理 TableCellMergeStrategy
+        sheet.addMergedRegion(new CellRangeAddress(3, 3, 1, 3));
+        sheet.addMergedRegion(new CellRangeAddress(1, 2, 2, 2));
+
     }
 
     private boolean needShiftRow(Row row, Table table) {

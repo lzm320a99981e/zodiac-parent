@@ -104,11 +104,29 @@ public class ExcelTemplateTests {
     }
 
     @Test
-    public void test4() throws Exception {
+    public void testShiftRows() throws Exception {
         File template = new File(resources, "test.xlsx");
         FileInputStream input = new FileInputStream(template);
         Workbook workbook = WorkbookFactory.create(input);
         Sheet sheet = workbook.getSheetAt(0);
+        sheet.shiftRows(1, sheet.getLastRowNum(), 5, true, false);
+        Path output = Paths.get(template.getParentFile().getAbsolutePath(), "output.xlsx");
+        FileOutputStream outputStream = new FileOutputStream(output.toFile());
+
+        workbook.write(outputStream);
+        workbook.close();
+        outputStream.close();
+        input.close();
+    }
+
+    @Test
+    public void testMergedRegion() throws Exception {
+        File template = new File(resources, "test.xlsx");
+        FileInputStream input = new FileInputStream(template);
+        Workbook workbook = WorkbookFactory.create(input);
+        Sheet sheet = workbook.getSheetAt(0);
+//        sheet.addMergedRegion()
+
         sheet.shiftRows(1, sheet.getLastRowNum(), 5, true, false);
         Path output = Paths.get(template.getParentFile().getAbsolutePath(), "output.xlsx");
         FileOutputStream outputStream = new FileOutputStream(output.toFile());
