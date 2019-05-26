@@ -1,6 +1,8 @@
 package com.github.lzm320a99981e.component.office;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.github.lzm320a99981e.component.office.excel.ExcelReader;
 import com.github.lzm320a99981e.component.office.excel.ExcelWriter;
 import com.github.lzm320a99981e.component.office.excel.TableCellMergeStrategy;
 import com.github.lzm320a99981e.component.office.excel.metadata.Point;
@@ -25,7 +27,7 @@ public class ExcelTemplateTests {
 
     @Test
     public void test() throws Exception {
-        final Workbook workbook = WorkbookFactory.create(new File(resources, "test.xlsx"));
+        final Workbook workbook = WorkbookFactory.create(new File(resources, "test-writer-template.xlsx"));
         System.out.println(workbook);
         final Sheet sheet = workbook.getSheetAt(0);
         final int lastRowNum = sheet.getLastRowNum();
@@ -42,7 +44,7 @@ public class ExcelTemplateTests {
 
     @Test
     public void test2() throws Exception {
-        final Workbook workbook = WorkbookFactory.create(new File(resources, "test.xlsx"));
+        final Workbook workbook = WorkbookFactory.create(new File(resources, "test-writer-template.xlsx"));
         final RichTextString richTextString = workbook.getSheetAt(0).getRow(11).getCell(0).getRichStringCellValue();
         final int runs = richTextString.numFormattingRuns();
         System.out.println(runs);
@@ -78,7 +80,7 @@ public class ExcelTemplateTests {
     }
 
     @Test
-    public void test3() throws Exception {
+    public void testWriter() throws Exception {
         Table table = Table.create(0, 1);
         Integer sheetIndex = table.getSheetIndex();
         Integer startRow = table.getStartRow();
@@ -111,7 +113,7 @@ public class ExcelTemplateTests {
             rowData.put("birth", "zhangsan" + i);
             data.add(rowData);
         }
-        File template = new File(resources, "test.xlsx");
+        File template = new File(resources, "test-writer-template.xlsx");
         byte[] bytes = ExcelWriter.create()
                 .addTable(table, data, TableCellMergeStrategy.REPEAT)
                 .addTable(table1, data, TableCellMergeStrategy.REPEAT)
@@ -119,17 +121,40 @@ public class ExcelTemplateTests {
                 .addPoint(Point.create(sheetIndex, 11, 1), "熊逸1234")
                 .addPoint(Point.create(sheetIndex, 12, 1), "234234234324")
                 .write(template);
-        Files.write(Paths.get(template.getParentFile().getAbsolutePath(), "output.xlsx"), bytes);
+        Files.write(Paths.get(template.getParentFile().getAbsolutePath(), "test-reader.xlsx"), bytes);
+    }
+
+    @Test
+    public void testReader() {
+        Table table = Table.create(0, 1);
+        Integer sheetIndex = table.getSheetIndex();
+        Integer startRow = table.getStartRow();
+        table.setColumns(
+                Arrays.asList(
+                        Point.create(sheetIndex, startRow, 0, "name"),
+                        Point.create(sheetIndex, startRow, 2, "age"),
+                        Point.create(sheetIndex, startRow, 3, "birth")
+                )
+        );
+
+        File file = new File(resources, "test-reader.xlsx");
+        Map<String, Object> data = ExcelReader.create()
+                .addTable(table, "users")
+                .addPoint(Point.create(sheetIndex, 28,1), "username")
+                .addPoint(Point.create(sheetIndex, 29,1), "password")
+                .addPoint(Point.create(sheetIndex, 30,1), "phone")
+                .read(file);
+        System.out.println(JSON.toJSONString(data, true));
     }
 
     @Test
     public void testShiftRows() throws Exception {
-        File template = new File(resources, "test.xlsx");
+        File template = new File(resources, "test-writer-template.xlsx");
         FileInputStream input = new FileInputStream(template);
         Workbook workbook = WorkbookFactory.create(input);
         Sheet sheet = workbook.getSheetAt(0);
         sheet.shiftRows(1, sheet.getLastRowNum(), 5, true, false);
-        Path output = Paths.get(template.getParentFile().getAbsolutePath(), "output.xlsx");
+        Path output = Paths.get(template.getParentFile().getAbsolutePath(), "test-reader.xlsx");
         FileOutputStream outputStream = new FileOutputStream(output.toFile());
 
         workbook.write(outputStream);
@@ -140,14 +165,14 @@ public class ExcelTemplateTests {
 
     @Test
     public void testMergedRegion() throws Exception {
-        File template = new File(resources, "test.xlsx");
+        File template = new File(resources, "test-writer-template.xlsx");
         FileInputStream input = new FileInputStream(template);
         Workbook workbook = WorkbookFactory.create(input);
         Sheet sheet = workbook.getSheetAt(0);
 //        sheet.addMergedRegion()
 
         sheet.shiftRows(1, sheet.getLastRowNum(), 5, true, false);
-        Path output = Paths.get(template.getParentFile().getAbsolutePath(), "output.xlsx");
+        Path output = Paths.get(template.getParentFile().getAbsolutePath(), "test-reader.xlsx");
         FileOutputStream outputStream = new FileOutputStream(output.toFile());
 
         workbook.write(outputStream);

@@ -3,6 +3,7 @@ package com.github.lzm320a99981e.component.office.excel;
 import com.github.lzm320a99981e.component.office.excel.metadata.Point;
 import com.github.lzm320a99981e.component.office.excel.metadata.Table;
 import com.github.lzm320a99981e.zodiac.tools.ExceptionHelper;
+import com.google.common.base.Preconditions;
 import org.apache.poi.ss.usermodel.*;
 
 import java.io.File;
@@ -21,23 +22,20 @@ public class ExcelReader {
     private List<Table> tables = new ArrayList<>();
     private List<Point> points = new ArrayList<>();
 
-    public ExcelReader addTable(Table table) {
+    public ExcelReader addTable(Table table, String dataKey) {
+        table.setDataKey(Preconditions.checkNotNull(dataKey));
         this.tables.add(table);
         return this;
     }
 
-    public ExcelReader addTables(Collection<Table> tables) {
-        this.tables.addAll(tables);
-        return this;
-    }
-
-    public ExcelReader addPoint(Point point) {
+    public ExcelReader addPoint(Point point, String dataKey) {
+        point.setDataKey(Preconditions.checkNotNull(dataKey));
         this.points.add(point);
         return this;
     }
 
-    public ExcelReader addPoints(Collection<Point> points) {
-        this.points.addAll(points);
+    public ExcelReader addPoints(Map<String, Point> points) {
+        points.keySet().forEach(dataKey -> addPoint(points.get(dataKey), dataKey));
         return this;
     }
 
@@ -94,10 +92,10 @@ public class ExcelReader {
         for (int i = startRow; i < lastRowNum; i++) {
             Row row = sheet.getRow(i);
             Map<String, Object> rowData = readRow(row, table);
-            if (Objects.nonNull(rowData) && !rowData.isEmpty()) {
-                data.add(rowData);
+            if (Objects.isNull(rowData) || rowData.isEmpty()) {
+                break;
             }
-            break;
+            data.add(rowData);
         }
         return data.isEmpty() ? null : data;
     }
