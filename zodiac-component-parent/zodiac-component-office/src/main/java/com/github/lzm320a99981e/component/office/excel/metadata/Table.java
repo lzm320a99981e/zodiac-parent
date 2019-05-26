@@ -70,6 +70,7 @@ public class Table implements Metadata {
 
 
     private Map<String, Integer> dataKeyWithColumnNumberMap;
+    private Map<Integer, String> columnNumberWithDataKeyMap;
 
     public Map<String, Integer> getDataKeyWithColumnNumberMap() {
         if (Objects.nonNull(this.dataKeyWithColumnNumberMap)) {
@@ -81,6 +82,18 @@ public class Table implements Metadata {
             this.dataKeyWithColumnNumberMap.put(column.getDataKey(), column.getColumnNumber());
         }
         return this.dataKeyWithColumnNumberMap;
+    }
+
+    public Map<Integer, String> getColumnNumberWithDataKeyMap() {
+        if (Objects.nonNull(this.columnNumberWithDataKeyMap)) {
+            return this.columnNumberWithDataKeyMap;
+        }
+        this.columnNumberWithDataKeyMap = new LinkedHashMap<>();
+        Map<String, Integer> dataKeyWithColumnNumberMap = getDataKeyWithColumnNumberMap();
+        for (Map.Entry<String, Integer> entry : dataKeyWithColumnNumberMap.entrySet()) {
+            this.columnNumberWithDataKeyMap.put(entry.getValue(), entry.getKey());
+        }
+        return this.columnNumberWithDataKeyMap;
     }
 }
 

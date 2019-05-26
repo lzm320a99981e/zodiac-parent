@@ -1,6 +1,5 @@
 package com.github.lzm320a99981e.component.office.excel;
 
-import com.github.lzm320a99981e.component.office.excel.metadata.Metadata;
 import com.github.lzm320a99981e.component.office.excel.metadata.Point;
 import com.github.lzm320a99981e.component.office.excel.metadata.Table;
 import com.github.lzm320a99981e.zodiac.tools.ExceptionHelper;
@@ -30,10 +29,6 @@ import java.util.stream.IntStream;
  */
 @Slf4j
 public class ExcelWriter {
-    public static ExcelWriter create() {
-        return new ExcelWriter();
-    }
-
     /**
      * 表格数据
      */
@@ -50,6 +45,10 @@ public class ExcelWriter {
      * sheet移动行计数器
      */
     private Map<Sheet, AtomicInteger> sheetShiftRowCounterMap = new LinkedHashMap<>();
+
+    public static ExcelWriter create() {
+        return new ExcelWriter();
+    }
 
     /**
      * 添加表格
@@ -130,7 +129,7 @@ public class ExcelWriter {
      */
     public byte[] write(InputStream template) {
         if (tableDataMap.isEmpty() && pointDataMap.isEmpty()) {
-            throw new RuntimeException("未添加任何数据，请添加数据后操作");
+            throw new RuntimeException("未添加任何元数据，请添加元数据后操作");
         }
         try {
             // 创建工作本
@@ -169,28 +168,6 @@ public class ExcelWriter {
     }
 
     /**
-     * 写入到单元格
-     *
-     * @param workbook
-     * @param dataEntry
-     */
-    private void writePoint(Workbook workbook, PointDataEntry dataEntry) {
-        Point point = dataEntry.getPoint();
-        Object data = dataEntry.getData();
-        if (Objects.isNull(data)) {
-            log.warn("单元格 -> {} 设置的数据为空", point.getDataKey());
-            return;
-        }
-        Sheet sheet = findSheet(workbook, point);
-        Integer rowNumber = point.getRowNumber();
-        Row row = Preconditions.checkNotNull(sheet.getRow(rowNumber), "在sheet[%s]中，未找到行号[%s]对应的行", sheet.getSheetName(), rowNumber);
-
-        Integer columnNumber = point.getColumnNumber();
-        Cell cell = Preconditions.checkNotNull(row.getCell(columnNumber), "在sheet[%s]的第[%s]行中，未找到列号[%s]对应的列", sheet.getSheetName(), rowNumber, columnNumber);
-        ExcelHelper.setCellValue(cell, data);
-    }
-
-    /**
      * 写入到表格
      *
      * @param workbook
@@ -204,7 +181,7 @@ public class ExcelWriter {
             return;
         }
 
-        Sheet sheet = findSheet(workbook, table);
+        Sheet sheet = ExcelHelper.findSheet(workbook, table);
         int dataSize = data.size();
         Integer startRowNumber = table.getStartRow() + (sheetShiftRowCounterMap.containsKey(sheet) ? sheetShiftRowCounterMap.get(sheet).get() : 0);
         Integer endRowNumber = dataSize + startRowNumber;
@@ -261,13 +238,13 @@ public class ExcelWriter {
         }
     }
 
-    private boolean needShiftRow(Row row, Table table) {
-        return table.getDataKeyWithColumnNumberMap().values().stream().anyMatch(item -> {
-            Cell cell = row.getCell(item);
-            return Objects.nonNull(cell) && Objects.nonNull(ExcelHelper.getCellValue(cell));
-        });
-    }
-
+    /**
+     * 写入到表格行
+     *
+     * @param row
+     * @param table
+     * @param data
+     */
     private void writeRow(Row row, Table table, Map<String, Object> data) {
         final Map<String, Integer> dataKeyWithColumnNumberMap = table.getDataKeyWithColumnNumberMap();
         dataKeyWithColumnNumberMap.keySet().forEach(dataKey -> {
@@ -276,17 +253,50 @@ public class ExcelWriter {
         });
     }
 
+    /**
+     * 写入到表格单元格
+     *
+     * @param cell
+     * @param data
+     */
     private void writeCell(Cell cell, Object data) {
         ExcelHelper.setCellValue(cell, data);
     }
 
-    private Sheet findSheet(Workbook workbook, Metadata metadata) {
-        Integer sheetIndex = metadata.getSheetIndex();
-        if (Objects.nonNull(sheetIndex)) {
-            return Preconditions.checkNotNull(workbook.getSheetAt(sheetIndex), "根据 sheetIndex -> %s 未找到对应的sheet", sheetIndex);
+    /**
+     * 写入到sheet单元格
+     *
+     * @param workbook
+     * @param dataEntry
+     */
+    private void writePoint(Workbook workbook, PointDataEntry dataEntry) {
+        Point point = dataEntry.getPoint();
+        Object data = dataEntry.getData();
+        if (Objects.isNull(data)) {
+            log.warn("单元格 -> {} 设置的数据为空", point.getDataKey());
+            return;
         }
-        String sheetName = metadata.getSheetName();
-        return Preconditions.checkNotNull(workbook.getSheet(sheetName), "根据 sheetName -> %s 未找到对应的sheet", sheetName);
+        Sheet sheet = ExcelHelper.findSheet(workbook, point);
+        Integer rowNumber = point.getRowNumber();
+        Row row = Preconditions.checkNotNull(sheet.getRow(rowNumber), "在sheet[%s]中，未找到行号[%s]对应的行", sheet.getSheetName(), rowNumber);
+
+        Integer columnNumber = point.getColumnNumber();
+        Cell cell = Preconditions.checkNotNull(row.getCell(columnNumber), "在sheet[%s]的第[%s]行中，未找到列号[%s]对应的列", sheet.getSheetName(), rowNumber, columnNumber);
+        ExcelHelper.setCellValue(cell, data);
+    }
+
+    /**
+     * 判断是否需要移动行
+     *
+     * @param row
+     * @param table
+     * @return
+     */
+    private boolean needShiftRow(Row row, Table table) {
+        return table.getDataKeyWithColumnNumberMap().values().stream().anyMatch(item -> {
+            Cell cell = row.getCell(item);
+            return Objects.nonNull(cell) && Objects.nonNull(ExcelHelper.getCellValue(cell));
+        });
     }
 
     @Data

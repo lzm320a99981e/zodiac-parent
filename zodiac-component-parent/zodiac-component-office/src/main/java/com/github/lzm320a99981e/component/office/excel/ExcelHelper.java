@@ -1,15 +1,14 @@
 package com.github.lzm320a99981e.component.office.excel;
 
+import com.github.lzm320a99981e.component.office.excel.metadata.Metadata;
+import com.google.common.base.Preconditions;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 /**
  * Excel操作辅助类
@@ -191,6 +190,22 @@ public class ExcelHelper {
         if (copyValue) {
             setCellValue(target, getCellValue(source));
         }
+    }
+
+    /**
+     * 获取sheet
+     *
+     * @param workbook
+     * @param metadata
+     * @return
+     */
+    public static Sheet findSheet(Workbook workbook, Metadata metadata) {
+        Integer sheetIndex = metadata.getSheetIndex();
+        if (Objects.nonNull(sheetIndex)) {
+            return Preconditions.checkNotNull(workbook.getSheetAt(sheetIndex), "根据 sheetIndex -> %s 未找到对应的sheet", sheetIndex);
+        }
+        String sheetName = metadata.getSheetName();
+        return Preconditions.checkNotNull(workbook.getSheet(sheetName), "根据 sheetName -> %s 未找到对应的sheet", sheetName);
     }
 
 }
