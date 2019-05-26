@@ -1,5 +1,6 @@
 package com.github.lzm320a99981e.component.office.excel;
 
+import com.github.lzm320a99981e.component.office.excel.metadata.Table;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -23,7 +24,7 @@ public enum TableCellMergeStrategy {
      * @param data
      * @return
      */
-    public List<TableCellMergeRange> findCellMergeRanges(List<Map<String, Object>> data) {
+    public List<TableCellMergeRange> findCellMergeRanges(Table table, List<Map<String, Object>> data) {
         List<TableCellMergeRange> tableCellMergeRanges = new ArrayList<>();
         Map<String, RowspanCounter> rowspanCounterMap = new HashMap<>();
 
@@ -32,7 +33,7 @@ public enum TableCellMergeStrategy {
             Map<String, Object> rowData = data.get(i);
 
             // 获取跨列
-            List<String> keys = new ArrayList<>(rowData.keySet());
+            List<String> keys = new ArrayList<>(table.getDataKeyWithColumnNumberMap().keySet());
             ColspanCounter colspanCounter = new ColspanCounter(keys.get(0));
             for (int j = 1; j < keys.size(); j++) {
                 String startColumnDataKey = colspanCounter.getStartColumnDataKey();

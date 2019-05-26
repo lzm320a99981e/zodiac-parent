@@ -16,7 +16,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -36,15 +36,19 @@ public class ExcelWriter {
     /**
      * 表格数据
      */
-    private Map<String, TableDataEntry> tableDataMap = new HashMap<>();
+    private Map<String, TableDataEntry> tableDataMap = new LinkedHashMap<>();
     /**
      * 单元格数据
      */
-    private Map<String, PointDataEntry> pointDataMap = new HashMap<>();
+    private Map<String, PointDataEntry> pointDataMap = new LinkedHashMap<>();
     /**
      * 表格单元格合并区域
      */
-    private Map<Table, List<TableCellMergeRange>> tableCellMergeRangesMap = new HashMap<>();
+    private Map<Table, List<TableCellMergeRange>> tableCellMergeRangesMap = new LinkedHashMap<>();
+    /**
+     * sheet移动行计数器
+     */
+    private Map<Sheet, AtomicInteger> sheetShiftRowCounterMap = new LinkedHashMap<>();
 
     /**
      * 添加表格
@@ -70,7 +74,7 @@ public class ExcelWriter {
     public ExcelWriter addTable(Table table, List<Map<String, Object>> data, TableCellMergeStrategy strategy) {
         Preconditions.checkNotNull(strategy);
         addTable(table, data);
-        this.tableCellMergeRangesMap.put(table, strategy.findCellMergeRanges(data));
+        this.tableCellMergeRangesMap.put(table, strategy.findCellMergeRanges(table, data));
         return this;
     }
 
@@ -198,11 +202,11 @@ public class ExcelWriter {
 
         Sheet sheet = findSheet(workbook, table);
         int dataSize = data.size();
-        Integer startRowNumber = table.getStartRow();
+        Integer startRowNumber = table.getStartRow() + (sheetShiftRowCounterMap.containsKey(sheet) ? sheetShiftRowCounterMap.get(sheet).get() : 0);
+        Integer endRowNumber = dataSize + startRowNumber;
         AtomicBoolean moved = new AtomicBoolean(false);
-        AtomicInteger moveRows = new AtomicInteger(0);
 
-        IntStream.range(startRowNumber, dataSize).forEach(i -> {
+        IntStream.range(startRowNumber, endRowNumber).forEach(i -> {
             Row row = sheet.getRow(i);
             Map<String, Object> rowData = data.get(i - startRowNumber);
             // 空行处理
@@ -218,8 +222,12 @@ public class ExcelWriter {
 
             // 非空行，需要判断是否需要进行移动（判断依据：行的单元格已有数据，并且包含在需要填充数据的单元格）
             if (!moved.get() && needShiftRow(row, table)) {
-                sheet.shiftRows(i, sheet.getLastRowNum(), dataSize - i);
-                moveRows.addAndGet(dataSize - i);
+                if (!sheetShiftRowCounterMap.containsKey(sheet)) {
+                    sheetShiftRowCounterMap.put(sheet, new AtomicInteger(0));
+                }
+                int shiftRows = endRowNumber - i;
+                sheetShiftRowCounterMap.get(sheet).addAndGet(shiftRows);
+                sheet.shiftRows(i, sheet.getLastRowNum(), shiftRows);
                 moved.set(true);
             }
 
@@ -240,8 +248,8 @@ public class ExcelWriter {
         if (Objects.nonNull(tableCellMergeRanges) && !tableCellMergeRanges.isEmpty()) {
             Map<String, Integer> dataKeyWithColumnNumberMap = table.getDataKeyWithColumnNumberMap();
             tableCellMergeRanges.forEach(item -> {
-                int firstRowNumber = item.getStartRowDataIndex() + startRowNumber + moveRows.get();
-                int lastRowNumber = firstRowNumber + item.getEndRowDataIndex();
+                int firstRowNumber = item.getStartRowDataIndex() + startRowNumber;
+                int lastRowNumber = firstRowNumber + (item.getEndRowDataIndex() - item.getStartRowDataIndex());
                 Integer firstColumnNumber = dataKeyWithColumnNumberMap.get(item.getStartColumnDataKey());
                 Integer lastColumnNumber = dataKeyWithColumnNumberMap.get(item.getEndColumnDataKey());
                 sheet.addMergedRegion(new CellRangeAddress(firstRowNumber, lastRowNumber, firstColumnNumber, lastColumnNumber));
@@ -258,7 +266,7 @@ public class ExcelWriter {
 
     private void writeRow(Row row, Table table, Map<String, Object> data) {
         final Map<String, Integer> dataKeyWithColumnNumberMap = table.getDataKeyWithColumnNumberMap();
-        table.getDataKeys().forEach(dataKey -> {
+        dataKeyWithColumnNumberMap.keySet().forEach(dataKey -> {
             Integer columnNumber = dataKeyWithColumnNumberMap.get(dataKey);
             writeCell(ExcelHelper.createCellIfNonExistent(row, columnNumber), data.get(dataKey));
         });

@@ -2,6 +2,7 @@ package com.github.lzm320a99981e.component.office;
 
 import com.alibaba.fastjson.JSONObject;
 import com.github.lzm320a99981e.component.office.excel.ExcelWriter;
+import com.github.lzm320a99981e.component.office.excel.TableCellMergeStrategy;
 import com.github.lzm320a99981e.component.office.excel.metadata.Point;
 import com.github.lzm320a99981e.component.office.excel.metadata.Table;
 import org.apache.poi.ss.usermodel.*;
@@ -78,7 +79,7 @@ public class ExcelTemplateTests {
 
     @Test
     public void test3() throws Exception {
-        Table table = Table.create(0, 1, "");
+        Table table = Table.create(0, 1, "vv");
         Integer sheetIndex = table.getSheetIndex();
         Integer startRow = table.getStartRow();
         // 姓名	年龄	性别	出生
@@ -90,16 +91,31 @@ public class ExcelTemplateTests {
                 )
         );
 
+        Table table1 = Table.create(0, 7, "xx");
+        Integer sheetIndex1 = table.getSheetIndex();
+        Integer startRow1 = table.getStartRow();
+        // 姓名	年龄	性别	出生
+        table1.setColumns(
+                Arrays.asList(
+                        Point.create(sheetIndex1, startRow1, 0, "name"),
+                        Point.create(sheetIndex1, startRow1, 2, "age"),
+                        Point.create(sheetIndex1, startRow1, 3, "birth")
+                )
+        );
+
         List<Map<String, Object>> data = new ArrayList<>();
         for (int i = 0; i < 10; i++) {
             JSONObject rowData = new JSONObject();
-            rowData.put("name", "zhangsan" + i);
+            rowData.put("name", "zhangsan");
             rowData.put("age", "zhangsan" + i);
             rowData.put("birth", "zhangsan" + i);
             data.add(rowData);
         }
         File template = new File(resources, "test.xlsx");
-        byte[] bytes = ExcelWriter.create().addTable(table, data).write(template);
+        byte[] bytes = ExcelWriter.create()
+                .addTable(table, data, TableCellMergeStrategy.REPEAT)
+                .addTable(table1, data, TableCellMergeStrategy.REPEAT)
+                .write(template);
         Files.write(Paths.get(template.getParentFile().getAbsolutePath(), "output.xlsx"), bytes);
     }
 

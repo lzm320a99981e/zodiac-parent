@@ -3,10 +3,7 @@ package com.github.lzm320a99981e.component.office.excel.metadata;
 import com.google.common.base.Preconditions;
 import lombok.Data;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -64,22 +61,16 @@ public class Table implements Metadata {
 
 
     private Map<String, Integer> dataKeyWithColumnNumberMap;
-    private Set<String> dataKeys;
-
     public Map<String, Integer> getDataKeyWithColumnNumberMap() {
         if (Objects.nonNull(this.dataKeyWithColumnNumberMap)) {
             return this.dataKeyWithColumnNumberMap;
         }
-        this.dataKeyWithColumnNumberMap = this.getColumns().stream().collect(Collectors.toMap(Point::getDataKey, Point::getColumnNumber));
-        return this.dataKeyWithColumnNumberMap;
-    }
-
-    public Set<String> getDataKeys() {
-        if (Objects.nonNull(this.dataKeys)) {
-            return this.dataKeys;
+        List<Point> sortedByColumnNumber = this.getColumns().stream().sorted(Comparator.comparingInt(Point::getColumnNumber)).collect(Collectors.toList());
+        this.dataKeyWithColumnNumberMap = new LinkedHashMap<>();
+        for (Point column : sortedByColumnNumber) {
+            this.dataKeyWithColumnNumberMap.put(column.getDataKey(), column.getColumnNumber());
         }
-        this.dataKeys = getDataKeyWithColumnNumberMap().keySet();
-        return this.dataKeys;
+        return this.dataKeyWithColumnNumberMap;
     }
 }
 
