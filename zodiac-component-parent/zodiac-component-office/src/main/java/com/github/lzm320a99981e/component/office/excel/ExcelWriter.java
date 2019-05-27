@@ -1,8 +1,9 @@
 package com.github.lzm320a99981e.component.office.excel;
 
+import com.github.lzm320a99981e.component.office.excel.interceptor.DefaultExcelWriteInterceptor;
+import com.github.lzm320a99981e.component.office.excel.interceptor.ExcelWriteInterceptor;
 import com.github.lzm320a99981e.component.office.excel.metadata.Point;
 import com.github.lzm320a99981e.component.office.excel.metadata.Table;
-import com.github.lzm320a99981e.zodiac.tools.ExceptionHelper;
 import com.github.lzm320a99981e.zodiac.tools.IdGenerator;
 import com.google.common.base.Preconditions;
 import lombok.AllArgsConstructor;
@@ -45,6 +46,10 @@ public class ExcelWriter {
      * sheet移动行计数器
      */
     private Map<Sheet, AtomicInteger> sheetShiftRowCounterMap = new LinkedHashMap<>();
+    /**
+     * 拦截器
+     */
+    private ExcelWriteInterceptor interceptor = new DefaultExcelWriteInterceptor();
 
     public static ExcelWriter create() {
         return new ExcelWriter();
@@ -139,7 +144,17 @@ public class ExcelWriter {
             this.pointDataMap.values().forEach(item -> writePoint(workbook, item));
 
             // 写入表格数据
-            this.tableDataMap.values().forEach(item -> writeTable(workbook, item));
+            this.tableDataMap.values().forEach(item -> {
+                final Sheet sheet = ExcelHelper.findSheet(workbook, item.getTable());
+                // ------------------------ 拦截器 --------------------------
+                final List<Map<String, Object>> filteredData = this.interceptor.beforeWriteTable(sheet, item.getTable(), item.getData());
+                if (Objects.isNull(filteredData)) {
+                    return;
+                }
+                item.setData(filteredData);
+                writeTable(workbook, item);
+                this.interceptor.afterWriteTable(sheet, item.getTable(), item.getData());
+            });
 
             // 获取写入后的数据
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
@@ -147,8 +162,9 @@ public class ExcelWriter {
             workbook.close();
             return outputStream.toByteArray();
         } catch (Exception e) {
-            throw ExceptionHelper.wrappedRuntimeException(e);
+            this.interceptor.onException(e);
         }
+        return null;
     }
 
     /**
@@ -163,8 +179,9 @@ public class ExcelWriter {
             inputStream.close();
             return data;
         } catch (Exception e) {
-            throw ExceptionHelper.wrappedRuntimeException(e);
+            this.interceptor.onException(e);
         }
+        return null;
     }
 
     /**
@@ -246,11 +263,19 @@ public class ExcelWriter {
      * @param data
      */
     private void writeRow(Row row, Table table, Map<String, Object> data) {
+        // ------------------------ 拦截器 --------------------------
+        final Map<String, Object> filteredData = this.interceptor.beforeWriteRow(row, table, data);
+        if (Objects.isNull(filteredData)) {
+            return;
+        }
+
         final Map<String, Integer> dataKeyWithColumnNumberMap = table.getDataKeyWithColumnNumberMap();
         dataKeyWithColumnNumberMap.keySet().forEach(dataKey -> {
             Integer columnNumber = dataKeyWithColumnNumberMap.get(dataKey);
-            writeCell(ExcelHelper.createCellIfNonExistent(row, columnNumber), data.get(dataKey));
+            writeCell(ExcelHelper.createCellIfNonExistent(row, columnNumber), table, filteredData.get(dataKey));
         });
+
+        this.interceptor.afterWriteRow(row, table, filteredData);
     }
 
     /**
@@ -259,8 +284,14 @@ public class ExcelWriter {
      * @param cell
      * @param data
      */
-    private void writeCell(Cell cell, Object data) {
-        ExcelHelper.setCellValue(cell, data);
+    private void writeCell(Cell cell, Table table, Object data) {
+        // ------------------------ 拦截器 --------------------------
+        final Object filteredData = this.interceptor.beforeWriteCell(cell, table, data);
+        if (Objects.isNull(filteredData)) {
+            return;
+        }
+        ExcelHelper.setCellValue(cell, filteredData);
+        this.interceptor.afterWriteCell(cell, table, filteredData);
     }
 
     /**
@@ -282,7 +313,14 @@ public class ExcelWriter {
 
         Integer columnNumber = point.getColumnNumber();
         Cell cell = Preconditions.checkNotNull(row.getCell(columnNumber), "在sheet[%s]的第[%s]行中，未找到列号[%s]对应的列", sheet.getSheetName(), rowNumber, columnNumber);
-        ExcelHelper.setCellValue(cell, data);
+
+        // ------------------------ 拦截器 --------------------------
+        final Object filteredData = this.interceptor.beforeWritePoint(cell, point, data);
+        if (Objects.isNull(filteredData)) {
+            return;
+        }
+        ExcelHelper.setCellValue(cell, filteredData);
+        this.interceptor.afterWritePoint(cell, point, filteredData);
     }
 
     /**

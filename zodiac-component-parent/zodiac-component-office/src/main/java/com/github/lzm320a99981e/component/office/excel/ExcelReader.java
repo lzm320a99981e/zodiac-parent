@@ -1,8 +1,9 @@
 package com.github.lzm320a99981e.component.office.excel;
 
+import com.github.lzm320a99981e.component.office.excel.interceptor.DefaultExcelReadInterceptor;
+import com.github.lzm320a99981e.component.office.excel.interceptor.ExcelReadInterceptor;
 import com.github.lzm320a99981e.component.office.excel.metadata.Point;
 import com.github.lzm320a99981e.component.office.excel.metadata.Table;
-import com.github.lzm320a99981e.zodiac.tools.ExceptionHelper;
 import com.google.common.base.Preconditions;
 import org.apache.poi.ss.usermodel.*;
 
@@ -15,12 +16,18 @@ import java.util.*;
  * Excel 读取
  */
 public class ExcelReader {
+    private List<Table> tables = new ArrayList<>();
+    private List<Point> points = new ArrayList<>();
+    private ExcelReadInterceptor interceptor = new DefaultExcelReadInterceptor();
+
     public static ExcelReader create() {
         return new ExcelReader();
     }
 
-    private List<Table> tables = new ArrayList<>();
-    private List<Point> points = new ArrayList<>();
+    public ExcelReader setInterceptor(ExcelReadInterceptor interceptor) {
+        this.interceptor = Preconditions.checkNotNull(interceptor);
+        return this;
+    }
 
     public ExcelReader addTable(Table table, String dataKey) {
         table.setDataKey(Preconditions.checkNotNull(dataKey));
@@ -46,8 +53,9 @@ public class ExcelReader {
             inputStream.close();
             return data;
         } catch (Exception e) {
-            throw ExceptionHelper.wrappedRuntimeException(e);
+            this.interceptor.onException(e);
         }
+        return null;
     }
 
     /**
@@ -63,13 +71,21 @@ public class ExcelReader {
         }
         try {
             // 创建工作本
-            Workbook workbook = WorkbookFactory.create(inputStream);
+            final Workbook workbook = WorkbookFactory.create(inputStream);
 
             // 读取的数据
-            Map<String, Object> data = new LinkedHashMap<>();
+            final Map<String, Object> data = new LinkedHashMap<>();
 
             // 读取表格
-            this.tables.forEach(item -> data.put(item.getDataKey(), readTable(workbook, item)));
+            this.tables.forEach(item -> {
+                final Sheet sheet = ExcelHelper.findSheet(workbook, item);
+                // ------------------------ 拦截器 --------------------------
+                if (!this.interceptor.beforeReadTable(sheet, item)) {
+                    return;
+                }
+                final List<Map<String, Object>> tableData = readTable(workbook, item);
+                data.put(item.getDataKey(), this.interceptor.afterReadTable(sheet, item, tableData));
+            });
 
             // 读取单元格
             this.points.forEach(item -> data.put(item.getDataKey(), readPoint(workbook, item)));
@@ -80,8 +96,9 @@ public class ExcelReader {
             // 返回数据
             return data;
         } catch (Exception e) {
-            throw ExceptionHelper.wrappedRuntimeException(e);
+            this.interceptor.onException(e);
         }
+        return null;
     }
 
     private List<Map<String, Object>> readTable(Workbook workbook, Table table) {
@@ -91,7 +108,14 @@ public class ExcelReader {
         int lastRowNum = sheet.getLastRowNum();
         for (int i = startRow; i < lastRowNum; i++) {
             Row row = sheet.getRow(i);
-            Map<String, Object> rowData = readRow(row, table);
+            // ------------------------ 拦截器 --------------------------
+            if (!this.interceptor.beforeReadRow(row, table)) {
+                continue;
+            }
+            Map<String, Object> rowData = this.interceptor.afterReadRow(row, table, readRow(row, table));
+            /*
+             * !!!注意：这里如果读取到的行数据为空，则认为已经读取到数据表格的末行了(TODO 这个方案还有待改善)
+             */
             if (Objects.isNull(rowData) || rowData.isEmpty()) {
                 break;
             }
@@ -108,10 +132,15 @@ public class ExcelReader {
         Map<Integer, String> columnNumberWithDataKeyMap = table.getColumnNumberWithDataKeyMap();
         for (Map.Entry<Integer, String> entry : columnNumberWithDataKeyMap.entrySet()) {
             Cell cell = row.getCell(entry.getKey());
-            Object cellValue = ExcelHelper.getCellValue(cell);
-            if (Objects.nonNull(cellValue)) {
-                rowData.put(entry.getValue(), cellValue);
+            // ------------------------ 拦截器 --------------------------
+            if (!this.interceptor.beforeReadCell(cell, table)) {
+                continue;
             }
+            Object cellValue = this.interceptor.afterReadCell(cell, table, ExcelHelper.getCellValue(cell));
+            if (Objects.isNull(cellValue)) {
+                continue;
+            }
+            rowData.put(entry.getValue(), cellValue);
         }
         return rowData.isEmpty() ? null : rowData;
     }
@@ -126,7 +155,11 @@ public class ExcelReader {
         if (Objects.isNull(cell)) {
             return null;
         }
-        return ExcelHelper.getCellValue(cell);
+        // ------------------------ 拦截器 --------------------------
+        if (!this.interceptor.beforeReadPoint(cell, point)) {
+            return null;
+        }
+        return this.interceptor.afterReadPoint(cell, point, ExcelHelper.getCellValue(cell));
     }
 
 
