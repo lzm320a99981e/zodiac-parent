@@ -29,4 +29,11 @@ public @interface ExcelTable {
      * @return
      */
     int[] limit();
+
+    /**
+     * 固定行数，一般用于指定表头的行数（暂时用在读取excel的时候）
+     *
+     * @return
+     */
+    int fixedRows() default 1;
 }
