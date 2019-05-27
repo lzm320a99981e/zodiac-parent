@@ -16,36 +16,84 @@ import java.util.*;
  * Excel 读取
  */
 public class ExcelReader {
+    /**
+     * 表格配置
+     */
     private List<Table> tables = new ArrayList<>();
+
+    /**
+     * 单元格配置
+     */
     private List<Point> points = new ArrayList<>();
+
+    /**
+     * 拦截器
+     */
     private ExcelReadInterceptor interceptor = new DefaultExcelReadInterceptor();
 
+    /**
+     * 创建ExcelReader实例
+     *
+     * @return
+     */
     public static ExcelReader create() {
         return new ExcelReader();
     }
 
+    /**
+     * 设置拦截器
+     *
+     * @param interceptor
+     * @return
+     */
     public ExcelReader setInterceptor(ExcelReadInterceptor interceptor) {
         this.interceptor = Preconditions.checkNotNull(interceptor);
         return this;
     }
 
+    /**
+     * 添加表格配置信息
+     *
+     * @param table
+     * @param dataKey
+     * @return
+     */
     public ExcelReader addTable(Table table, String dataKey) {
         table.setDataKey(Preconditions.checkNotNull(dataKey));
         this.tables.add(table);
         return this;
     }
 
+    /**
+     * 添加单元格配置信息
+     *
+     * @param point
+     * @param dataKey
+     * @return
+     */
     public ExcelReader addPoint(Point point, String dataKey) {
         point.setDataKey(Preconditions.checkNotNull(dataKey));
         this.points.add(point);
         return this;
     }
 
+    /**
+     * 添加多个单元格配置信息
+     *
+     * @param points
+     * @return
+     */
     public ExcelReader addPoints(Map<String, Point> points) {
         points.keySet().forEach(dataKey -> addPoint(points.get(dataKey), dataKey));
         return this;
     }
 
+    /**
+     * 读取Excel文件
+     *
+     * @param file
+     * @return
+     */
     public Map<String, Object> read(File file) {
         try {
             FileInputStream inputStream = new FileInputStream(file);
@@ -101,12 +149,24 @@ public class ExcelReader {
         return null;
     }
 
+    /**
+     * 读取Sheet中配置的表格
+     *
+     * @param workbook
+     * @param table
+     * @return
+     */
     private List<Map<String, Object>> readTable(Workbook workbook, Table table) {
         List<Map<String, Object>> data = new ArrayList<>();
         Sheet sheet = ExcelHelper.findSheet(workbook, table);
         Integer startRowNumber = table.getStartRowNumber();
-        int lastRowNum = sheet.getLastRowNum();
-        for (int i = startRowNumber; i < lastRowNum; i++) {
+        int endLastRowNumber = sheet.getLastRowNum();
+        Integer tableSize = table.getSize();
+        if (Objects.nonNull(tableSize) && tableSize > 0 && (startRowNumber + tableSize) < endLastRowNumber) {
+            endLastRowNumber = startRowNumber + tableSize;
+        }
+
+        for (int i = startRowNumber; i < endLastRowNumber; i++) {
             Row row = sheet.getRow(i);
             // ------------------------ 拦截器 --------------------------
             if (!this.interceptor.beforeReadRow(row, table)) {
@@ -124,6 +184,13 @@ public class ExcelReader {
         return data.isEmpty() ? null : data;
     }
 
+    /**
+     * 读取行
+     *
+     * @param row
+     * @param table
+     * @return
+     */
     private Map<String, Object> readRow(Row row, Table table) {
         if (Objects.isNull(row)) {
             return null;
@@ -145,6 +212,13 @@ public class ExcelReader {
         return rowData.isEmpty() ? null : rowData;
     }
 
+    /**
+     * 读取单元格
+     *
+     * @param workbook
+     * @param point
+     * @return
+     */
     private Object readPoint(Workbook workbook, Point point) {
         Sheet sheet = ExcelHelper.findSheet(workbook, point);
         Row row = sheet.getRow(point.getRowNumber());
@@ -161,6 +235,4 @@ public class ExcelReader {
         }
         return this.interceptor.afterReadPoint(cell, point, ExcelHelper.getCellValue(cell));
     }
-
-
 }

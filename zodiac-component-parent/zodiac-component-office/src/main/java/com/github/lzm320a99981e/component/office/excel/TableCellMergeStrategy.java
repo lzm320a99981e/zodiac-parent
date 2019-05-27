@@ -28,8 +28,13 @@ public enum TableCellMergeStrategy {
         List<TableCellMergeRange> tableCellMergeRanges = new ArrayList<>();
         Map<String, RowspanCounter> rowspanCounterMap = new HashMap<>();
 
-        int size = data.size();
-        for (int i = 0; i < size; i++) {
+        int dataSize = data.size();
+        Integer tableSize = table.getSize();
+        if (Objects.nonNull(tableSize) && tableSize > 0 && tableSize < dataSize) {
+            dataSize = tableSize;
+        }
+
+        for (int i = 0; i < dataSize; i++) {
             Map<String, Object> rowData = data.get(i);
 
             // 获取跨列

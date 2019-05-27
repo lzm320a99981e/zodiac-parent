@@ -51,12 +51,17 @@ public class ExcelWriter {
      */
     private ExcelWriteInterceptor interceptor = new DefaultExcelWriteInterceptor();
 
+    /**
+     * 创建ExcelWriter实例
+     *
+     * @return
+     */
     public static ExcelWriter create() {
         return new ExcelWriter();
     }
 
     /**
-     * 添加表格
+     * 添加表格配置
      *
      * @param table
      * @param data
@@ -69,7 +74,7 @@ public class ExcelWriter {
     }
 
     /**
-     * 添加表格
+     * 添加表格配置以及表格内单元格的合并策略
      *
      * @param table
      * @param data
@@ -84,7 +89,7 @@ public class ExcelWriter {
     }
 
     /**
-     * 添加表格
+     * 添加表格配置以及表格内单元格的合并策略
      *
      * @param table
      * @param data
@@ -99,7 +104,7 @@ public class ExcelWriter {
     }
 
     /**
-     * 添加单元格
+     * 添加单元格配置
      *
      * @param point
      * @param data
@@ -115,7 +120,7 @@ public class ExcelWriter {
     }
 
     /**
-     * 添加单元格
+     * 添加单元格配置
      *
      * @param points
      * @param data
@@ -199,11 +204,21 @@ public class ExcelWriter {
         }
 
         Sheet sheet = ExcelHelper.findSheet(workbook, table);
+        // 确定写入行数
         int dataSize = data.size();
+        Integer tableSize = table.getSize();
+        if (Objects.nonNull(tableSize) && tableSize > 0 && tableSize < dataSize) {
+            dataSize = tableSize;
+        }
+
+        // 写入范围
         Integer startRowNumber = table.getStartRowNumber() + (sheetShiftRowCounterMap.containsKey(sheet) ? sheetShiftRowCounterMap.get(sheet).get() : 0);
         Integer endRowNumber = dataSize + startRowNumber;
+
+        // 在向表格中写入数据的时候，是否移动了行
         AtomicBoolean moved = new AtomicBoolean(false);
 
+        // 遍历写入范围，开始写入
         IntStream.range(startRowNumber, endRowNumber).forEach(i -> {
             Row row = sheet.getRow(i);
             Map<String, Object> rowData = data.get(i - startRowNumber);

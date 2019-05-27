@@ -24,6 +24,10 @@ public class Table implements Metadata {
      */
     private Integer startRowNumber;
     /**
+     * 读取或写入的行数
+     */
+    private Integer size;
+    /**
      * 表格列
      */
     private List<Point> columns;
@@ -52,20 +56,20 @@ public class Table implements Metadata {
         this.dataKey = dataKey;
     }
 
-    public static Table create(String sheetName, Integer startRow) {
-        return new Table(sheetName, startRow);
+    public static Table create(String sheetName, Integer startRowNumber) {
+        return new Table(sheetName, startRowNumber);
     }
 
-    public static Table create(Integer sheetIndex, Integer startRow) {
-        return new Table(sheetIndex, startRow);
+    public static Table create(Integer sheetIndex, Integer startRowNumber) {
+        return new Table(sheetIndex, startRowNumber);
     }
 
-    public static Table create(String sheetName, Integer startRow, String dataKey) {
-        return new Table(sheetName, startRow, dataKey);
+    public static Table create(String sheetName, Integer startRowNumber, String dataKey) {
+        return new Table(sheetName, startRowNumber, dataKey);
     }
 
-    public static Table create(Integer sheetIndex, Integer startRow, String dataKey) {
-        return new Table(sheetIndex, startRow, dataKey);
+    public static Table create(Integer sheetIndex, Integer startRowNumber, String dataKey) {
+        return new Table(sheetIndex, startRowNumber, dataKey);
     }
 
 

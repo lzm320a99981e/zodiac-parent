@@ -84,6 +84,7 @@ public class ExcelTemplateTests {
     @Test
     public void testWriter() throws Exception {
         Table table = Table.create(0, 1);
+        table.setSize(5);
         Integer sheetIndex = table.getSheetIndex();
         Integer startRow = table.getStartRowNumber();
         // 姓名	年龄	性别	出生
@@ -96,6 +97,7 @@ public class ExcelTemplateTests {
         );
 
         Table table1 = Table.create(0, 7);
+        table1.setSize(3);
         Integer sheetIndex1 = table.getSheetIndex();
         Integer startRow1 = table.getStartRowNumber();
         // 姓名	年龄	性别	出生
@@ -129,6 +131,7 @@ public class ExcelTemplateTests {
     @Test
     public void testReader() {
         Table table = Table.create(0, 1);
+        table.setSize(50);
         Integer sheetIndex = table.getSheetIndex();
         Integer startRow = table.getStartRowNumber();
         table.setColumns(
