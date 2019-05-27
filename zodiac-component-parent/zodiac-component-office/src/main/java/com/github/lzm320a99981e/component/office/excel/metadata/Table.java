@@ -22,7 +22,7 @@ public class Table implements Metadata {
     /**
      * 开始行
      */
-    private Integer startRow;
+    private Integer startRowNumber;
     /**
      * 表格列
      */
@@ -32,23 +32,23 @@ public class Table implements Metadata {
      */
     private String dataKey;
 
-    public Table(String sheetName, Integer startRow) {
+    public Table(String sheetName, Integer startRowNumber) {
         this.sheetName = Preconditions.checkNotNull(sheetName);
-        this.startRow = Preconditions.checkNotNull(startRow);
+        this.startRowNumber = Preconditions.checkNotNull(startRowNumber);
     }
 
-    public Table(Integer sheetIndex, Integer startRow) {
+    public Table(Integer sheetIndex, Integer startRowNumber) {
         this.sheetIndex = Preconditions.checkNotNull(sheetIndex);
-        this.startRow = Preconditions.checkNotNull(startRow);
+        this.startRowNumber = Preconditions.checkNotNull(startRowNumber);
     }
 
-    public Table(String sheetName, Integer startRow, String dataKey) {
-        this(sheetName, startRow);
+    public Table(String sheetName, Integer startRowNumber, String dataKey) {
+        this(sheetName, startRowNumber);
         this.dataKey = dataKey;
     }
 
-    public Table(Integer sheetIndex, Integer startRow, String dataKey) {
-        this(sheetIndex, startRow);
+    public Table(Integer sheetIndex, Integer startRowNumber, String dataKey) {
+        this(sheetIndex, startRowNumber);
         this.dataKey = dataKey;
     }
 

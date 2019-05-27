@@ -200,7 +200,7 @@ public class ExcelWriter {
 
         Sheet sheet = ExcelHelper.findSheet(workbook, table);
         int dataSize = data.size();
-        Integer startRowNumber = table.getStartRow() + (sheetShiftRowCounterMap.containsKey(sheet) ? sheetShiftRowCounterMap.get(sheet).get() : 0);
+        Integer startRowNumber = table.getStartRowNumber() + (sheetShiftRowCounterMap.containsKey(sheet) ? sheetShiftRowCounterMap.get(sheet).get() : 0);
         Integer endRowNumber = dataSize + startRowNumber;
         AtomicBoolean moved = new AtomicBoolean(false);
 

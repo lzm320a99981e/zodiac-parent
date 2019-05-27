@@ -104,9 +104,9 @@ public class ExcelReader {
     private List<Map<String, Object>> readTable(Workbook workbook, Table table) {
         List<Map<String, Object>> data = new ArrayList<>();
         Sheet sheet = ExcelHelper.findSheet(workbook, table);
-        Integer startRow = table.getStartRow();
+        Integer startRowNumber = table.getStartRowNumber();
         int lastRowNum = sheet.getLastRowNum();
-        for (int i = startRow; i < lastRowNum; i++) {
+        for (int i = startRowNumber; i < lastRowNum; i++) {
             Row row = sheet.getRow(i);
             // ------------------------ 拦截器 --------------------------
             if (!this.interceptor.beforeReadRow(row, table)) {

@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.github.lzm320a99981e.component.office.excel.ExcelReader;
 import com.github.lzm320a99981e.component.office.excel.ExcelWriter;
 import com.github.lzm320a99981e.component.office.excel.TableCellMergeStrategy;
+import com.github.lzm320a99981e.component.office.excel.metadata.ExcelTable;
 import com.github.lzm320a99981e.component.office.excel.metadata.Point;
 import com.github.lzm320a99981e.component.office.excel.metadata.Table;
 import org.apache.poi.ss.usermodel.*;
@@ -13,6 +14,7 @@ import org.junit.Test;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.lang.reflect.Field;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -83,7 +85,7 @@ public class ExcelTemplateTests {
     public void testWriter() throws Exception {
         Table table = Table.create(0, 1);
         Integer sheetIndex = table.getSheetIndex();
-        Integer startRow = table.getStartRow();
+        Integer startRow = table.getStartRowNumber();
         // 姓名	年龄	性别	出生
         table.setColumns(
                 Arrays.asList(
@@ -95,7 +97,7 @@ public class ExcelTemplateTests {
 
         Table table1 = Table.create(0, 7);
         Integer sheetIndex1 = table.getSheetIndex();
-        Integer startRow1 = table.getStartRow();
+        Integer startRow1 = table.getStartRowNumber();
         // 姓名	年龄	性别	出生
         table1.setColumns(
                 Arrays.asList(
@@ -128,7 +130,7 @@ public class ExcelTemplateTests {
     public void testReader() {
         Table table = Table.create(0, 1);
         Integer sheetIndex = table.getSheetIndex();
-        Integer startRow = table.getStartRow();
+        Integer startRow = table.getStartRowNumber();
         table.setColumns(
                 Arrays.asList(
                         Point.create(sheetIndex, startRow, 0, "name"),
@@ -140,9 +142,9 @@ public class ExcelTemplateTests {
         File file = new File(resources, "test-reader.xlsx");
         Map<String, Object> data = ExcelReader.create()
                 .addTable(table, "users")
-                .addPoint(Point.create(sheetIndex, 28,1), "username")
-                .addPoint(Point.create(sheetIndex, 29,1), "password")
-                .addPoint(Point.create(sheetIndex, 30,1), "phone")
+                .addPoint(Point.create(sheetIndex, 28, 1), "username")
+                .addPoint(Point.create(sheetIndex, 29, 1), "password")
+                .addPoint(Point.create(sheetIndex, 30, 1), "phone")
                 .read(file);
         System.out.println(JSON.toJSONString(data, true));
     }
@@ -179,5 +181,32 @@ public class ExcelTemplateTests {
         workbook.close();
         outputStream.close();
         input.close();
+    }
+
+    @ExcelTable(limit = 5)
+    static class TableAnnoEntity {
+        private String a1;
+        private String b1;
+        private String c1;
+        private String a2;
+        private String b2;
+        private String c2;
+    }
+
+    @Test
+    public void testFieldOrder() {
+        final Field[] fields = TableAnnoEntity.class.getDeclaredFields();
+        for (Field field : fields) {
+            System.out.println(field.getName());
+        }
+        // ExcelTable sheetName sheetIndex startRowNumber startColumnNum rowStep columnStep
+        // ExcelColumn index
+        // ExcelPoint sheetName sheetIndex rowNumber columnNumber
+    }
+
+    @Test
+    public void testExcelAnnotation() {
+        final ExcelTable table = TableAnnoEntity.class.getAnnotation(ExcelTable.class);
+        System.out.println(table.limit()[0]);
     }
 }
