@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.github.lzm320a99981e.component.office.excel.ExcelReader;
 import com.github.lzm320a99981e.component.office.excel.ExcelWriter;
+import com.github.lzm320a99981e.component.office.excel.SimpleExcelReader;
 import com.github.lzm320a99981e.component.office.excel.TableCellMergeStrategy;
 import com.github.lzm320a99981e.component.office.excel.metadata.ExcelTable;
 import com.github.lzm320a99981e.component.office.excel.metadata.Point;
@@ -130,7 +131,7 @@ public class ExcelTemplateTests {
 
     @Test
     public void testReader() {
-        Table table = Table.create(0, 1);
+        Table table = Table.create(0, 1, "users");
         table.setSize(50);
         Integer sheetIndex = table.getSheetIndex();
         Integer startRow = table.getStartRowNumber();
@@ -144,12 +145,19 @@ public class ExcelTemplateTests {
 
         File file = new File(resources, "test-reader.xlsx");
         Map<String, Object> data = ExcelReader.create()
-                .addTable(table, "users")
-                .addPoint(Point.create(sheetIndex, 28, 1), "username")
-                .addPoint(Point.create(sheetIndex, 29, 1), "password")
-                .addPoint(Point.create(sheetIndex, 30, 1), "phone")
+                .addTable(table)
+                .addPoint(Point.create(sheetIndex, 28, 1, "username"))
+                .addPoint(Point.create(sheetIndex, 29, 1, "password"))
+                .addPoint(Point.create(sheetIndex, 30, 1, "phone"))
                 .read(file);
         System.out.println(JSON.toJSONString(data, true));
+    }
+
+    @Test
+    public void testSimpleReader() {
+        File file = new File(resources, "test-reader.xlsx");
+        List<User> users = SimpleExcelReader.create().readTable(User.class, file);
+        System.out.println(JSON.toJSONString(users, true));
     }
 
     @Test

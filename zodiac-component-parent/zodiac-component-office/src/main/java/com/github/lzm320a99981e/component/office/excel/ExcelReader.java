@@ -55,11 +55,10 @@ public class ExcelReader {
      * 添加表格配置信息
      *
      * @param table
-     * @param dataKey
      * @return
      */
-    public ExcelReader addTable(Table table, String dataKey) {
-        table.setDataKey(Preconditions.checkNotNull(dataKey));
+    public ExcelReader addTable(Table table) {
+        table.setDataKey(Preconditions.checkNotNull(table.getDataKey()));
         this.tables.add(table);
         return this;
     }
@@ -68,11 +67,10 @@ public class ExcelReader {
      * 添加单元格配置信息
      *
      * @param point
-     * @param dataKey
      * @return
      */
-    public ExcelReader addPoint(Point point, String dataKey) {
-        point.setDataKey(Preconditions.checkNotNull(dataKey));
+    public ExcelReader addPoint(Point point) {
+        point.setDataKey(Preconditions.checkNotNull(point.getDataKey()));
         this.points.add(point);
         return this;
     }
@@ -83,20 +81,20 @@ public class ExcelReader {
      * @param points
      * @return
      */
-    public ExcelReader addPoints(Map<String, Point> points) {
-        points.keySet().forEach(dataKey -> addPoint(points.get(dataKey), dataKey));
+    public ExcelReader addPoints(List<Point> points) {
+        points.forEach(this::addPoint);
         return this;
     }
 
     /**
      * 读取Excel文件
      *
-     * @param file
+     * @param excel
      * @return
      */
-    public Map<String, Object> read(File file) {
+    public Map<String, Object> read(File excel) {
         try {
-            FileInputStream inputStream = new FileInputStream(file);
+            FileInputStream inputStream = new FileInputStream(excel);
             Map<String, Object> data = read(inputStream);
             inputStream.close();
             return data;
@@ -110,16 +108,16 @@ public class ExcelReader {
      * TODO 还未解决取读取多个表格和和在表格下面的单元格，需要根据上一个表格的行数进行判断
      * TODO 怎么判断已读取到表格的最后一行（暂时的做法是，该行所有列的数据都为空，则认为已读取到表格的最后一行）
      *
-     * @param inputStream
+     * @param excel
      * @return
      */
-    public Map<String, Object> read(InputStream inputStream) {
+    public Map<String, Object> read(InputStream excel) {
         if (this.tables.isEmpty() && this.points.isEmpty()) {
             throw new RuntimeException("未添加任何元数据，请添加元数据后操作");
         }
         try {
             // 创建工作本
-            final Workbook workbook = WorkbookFactory.create(inputStream);
+            final Workbook workbook = WorkbookFactory.create(excel);
 
             // 读取的数据
             final Map<String, Object> data = new LinkedHashMap<>();

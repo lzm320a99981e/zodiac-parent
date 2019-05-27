@@ -244,7 +244,7 @@ public class ExcelHelper {
             int index = excelColumn.index();
             nextColumnIndex.set(Integer.MIN_VALUE == index ? nextColumnIndex.get() : index);
             int columnIndex = nextColumnIndex.getAndIncrement();
-            columns.add(sheetName.isEmpty() ? Point.create(sheetIndex, startRowNumber, columnIndex) : Point.create(sheetName, startRowNumber, columnIndex));
+            columns.add(sheetName.isEmpty() ? Point.create(sheetIndex, startRowNumber, columnIndex, field.getName()) : Point.create(sheetName, startRowNumber, columnIndex, field.getName()));
         }
 
         Preconditions.checkState(!columns.isEmpty(), "未找到@ExcelColumn注解在 class -> %s", type);
@@ -271,7 +271,7 @@ public class ExcelHelper {
             String sheetName = excelPoint.sheetName();
             int rowNumber = excelPoint.rowNumber();
             int columnNumber = excelPoint.columnNumber();
-            points.add(sheetName.isEmpty() ? Point.create(excelPoint.sheetIndex(), rowNumber, columnNumber) : Point.create(sheetName, rowNumber, columnNumber));
+            points.add(sheetName.isEmpty() ? Point.create(excelPoint.sheetIndex(), rowNumber, columnNumber, field.getName()) : Point.create(sheetName, rowNumber, columnNumber, field.getName()));
         }
         Preconditions.checkState(!points.isEmpty(), "未找到@ExcelPoint注解在 class -> %s", type);
         return points;
