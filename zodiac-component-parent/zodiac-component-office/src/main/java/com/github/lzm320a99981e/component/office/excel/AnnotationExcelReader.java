@@ -27,11 +27,11 @@ public class AnnotationExcelReader {
         return this;
     }
 
-    public AnnotationExcelReader addTable(Class type) {
+    public AnnotationExcelReader addTable(Class<?> type) {
         return addTable(type, type.getName());
     }
 
-    public AnnotationExcelReader addTable(Class type, String dataKey) {
+    public AnnotationExcelReader addTable(Class<?> type, String dataKey) {
 
         return this;
     }
@@ -46,6 +46,5 @@ public class AnnotationExcelReader {
         points.keySet().forEach(dataKey -> addPoint(points.get(dataKey), dataKey));
         return this;
     }
-
 
 }

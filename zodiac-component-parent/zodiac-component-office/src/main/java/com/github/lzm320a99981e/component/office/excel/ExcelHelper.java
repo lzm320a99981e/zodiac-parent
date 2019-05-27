@@ -1,6 +1,7 @@
 package com.github.lzm320a99981e.component.office.excel;
 
-import com.github.lzm320a99981e.component.office.excel.metadata.Metadata;
+import com.github.lzm320a99981e.component.office.excel.metadata.Table;
+import com.github.lzm320a99981e.component.office.excel.metadata.*;
 import com.google.common.base.Preconditions;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
@@ -8,7 +9,9 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Field;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Excel操作辅助类
@@ -206,6 +209,72 @@ public class ExcelHelper {
         }
         String sheetName = metadata.getSheetName();
         return Preconditions.checkNotNull(workbook.getSheet(sheetName), "根据 sheetName -> %s 未找到对应的sheet", sheetName);
+    }
+
+    /**
+     * 获取类注解上的Table信息
+     *
+     * @param type
+     * @return
+     */
+    public static Table classToTable(Class<?> type) {
+        ExcelTable excelTable = Preconditions.checkNotNull(type.getAnnotation(ExcelTable.class), "未找到@ExcelTable注解在class -> %s", type);
+
+        // table 注解
+        String sheetName = excelTable.sheetName();
+        int sheetIndex = excelTable.sheetIndex();
+        int[] limit = excelTable.limit();
+        Table table = sheetName.isEmpty() ? Table.create(sheetIndex, limit[0]) : Table.create(sheetName, limit[0]);
+        if (limit.length > 1) {
+            table.setSize(limit[1]);
+        }
+
+        // column 注解
+        Integer startRowNumber = table.getStartRowNumber();
+        Field[] fields = type.getDeclaredFields();
+        AtomicInteger nextColumnIndex = new AtomicInteger(0);
+        List<Point> columns = new ArrayList<>();
+        for (Field field : fields) {
+            field.setAccessible(true);
+            ExcelColumn excelColumn = field.getAnnotation(ExcelColumn.class);
+            field.setAccessible(false);
+            if (Objects.isNull(excelColumn)) {
+                continue;
+            }
+            int index = excelColumn.index();
+            nextColumnIndex.set(Integer.MIN_VALUE == index ? nextColumnIndex.get() : index);
+            int columnIndex = nextColumnIndex.getAndIncrement();
+            columns.add(sheetName.isEmpty() ? Point.create(sheetIndex, startRowNumber, columnIndex) : Point.create(sheetName, startRowNumber, columnIndex));
+        }
+
+        Preconditions.checkState(!columns.isEmpty(), "未找到@ExcelColumn注解在 class -> %s", type);
+        table.setColumns(columns);
+        return table;
+    }
+
+    /**
+     * 获取类注解上的Point信息
+     *
+     * @param type
+     * @return
+     */
+    public static List<Point> classToPoints(Class<?> type) {
+        List<Point> points = new ArrayList<>();
+        Field[] fields = type.getDeclaredFields();
+        for (Field field : fields) {
+            field.setAccessible(true);
+            ExcelPoint excelPoint = field.getAnnotation(ExcelPoint.class);
+            field.setAccessible(false);
+            if (Objects.isNull(excelPoint)) {
+                continue;
+            }
+            String sheetName = excelPoint.sheetName();
+            int rowNumber = excelPoint.rowNumber();
+            int columnNumber = excelPoint.columnNumber();
+            points.add(sheetName.isEmpty() ? Point.create(excelPoint.sheetIndex(), rowNumber, columnNumber) : Point.create(sheetName, rowNumber, columnNumber));
+        }
+        Preconditions.checkState(!points.isEmpty(), "未找到@ExcelPoint注解在 class -> %s", type);
+        return points;
     }
 
 }
