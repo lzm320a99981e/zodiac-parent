@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.github.lzm320a99981e.component.office.excel.interceptor.ExcelReadInterceptor;
 
 import java.io.File;
+import java.io.InputStream;
 import java.util.List;
 
 /**
@@ -26,7 +27,19 @@ public class SimpleExcelReader {
     }
 
     public <T> List<T> readTable(Class<T> type, File excel) {
-        Object data = this.excelReader.addTable(type).read(excel).get(type.getName());
-        return JSON.parseArray(JSON.toJSONString(data), type);
+        return JSON.parseArray(JSON.toJSONString(this.excelReader.addTable(type).read(excel).get(type.getName())), type);
     }
+
+    public <T> List<T> readTable(Class<T> type, InputStream excel) {
+        return JSON.parseArray(JSON.toJSONString(this.excelReader.addTable(type).read(excel).get(type.getName())), type);
+    }
+
+    public <T> T readPoints(Class<T> type, File excel) {
+        return JSON.parseObject(JSON.toJSONString(this.excelReader.addPoints(type).read(excel).get(type.getName())), type);
+    }
+
+    public <T> T readPoints(Class<T> type, InputStream excel) {
+        return JSON.parseObject(JSON.toJSONString(this.excelReader.addPoints(type).read(excel).get(type.getName())), type);
+    }
+
 }
