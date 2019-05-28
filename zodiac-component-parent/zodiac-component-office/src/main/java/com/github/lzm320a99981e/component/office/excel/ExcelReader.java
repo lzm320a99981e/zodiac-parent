@@ -95,9 +95,9 @@ public class ExcelReader {
     public Map<String, Object> read(File excel) {
         try {
             FileInputStream inputStream = new FileInputStream(excel);
-            Map<String, Object> data = read(inputStream);
+            Map<String, Object> result = read(inputStream);
             inputStream.close();
-            return data;
+            return result;
         } catch (Exception e) {
             this.interceptor.onException(e);
         }
@@ -105,20 +105,34 @@ public class ExcelReader {
     }
 
     /**
-     * TODO 还未解决取读取多个表格和和在表格下面的单元格，需要根据上一个表格的行数进行判断
-     * TODO 怎么判断已读取到表格的最后一行（暂时的做法是，该行所有列的数据都为空，则认为已读取到表格的最后一行）
+     * 读取Excel
      *
      * @param excel
      * @return
      */
     public Map<String, Object> read(InputStream excel) {
+        try {
+            final Workbook workbook = WorkbookFactory.create(Preconditions.checkNotNull(excel));
+            final Map<String, Object> result = read(workbook);
+            workbook.close();
+            return result;
+        } catch (Exception e) {
+            this.interceptor.onException(e);
+        }
+        return null;
+    }
+
+    /**
+     * 读取Excel
+     *
+     * @param workbook
+     * @return
+     */
+    public Map<String, Object> read(final Workbook workbook) {
         if (this.tables.isEmpty() && this.points.isEmpty()) {
             throw new RuntimeException("未添加任何元数据，请添加元数据后操作");
         }
         try {
-            // 创建工作本
-            final Workbook workbook = WorkbookFactory.create(excel);
-
             // 读取的数据
             final Map<String, Object> data = new LinkedHashMap<>();
 
@@ -135,9 +149,6 @@ public class ExcelReader {
 
             // 读取单元格
             this.points.forEach(item -> data.put(item.getDataKey(), readPoint(workbook, item)));
-
-            // 关闭工作本
-            workbook.close();
 
             // 返回数据
             return data;

@@ -3,15 +3,20 @@ package com.github.lzm320a99981e.component.office.excel;
 import com.alibaba.fastjson.JSON;
 import com.github.lzm320a99981e.component.office.excel.interceptor.ExcelWriteInterceptor;
 import com.google.common.base.Preconditions;
+import org.apache.poi.ss.usermodel.Workbook;
 
 import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * 简单 Excel 写入
+ * 复杂的写入操作请使用：{@link AnnotationExcelWriter}
+ * 更复杂的写入操作请使用：{@link ExcelWriter}
+ *
+ * @see AnnotationExcelWriter
+ * @see ExcelWriter
  */
 public class SimpleExcelWriter {
     private AnnotationExcelWriter excelWriter;
@@ -27,6 +32,10 @@ public class SimpleExcelWriter {
     }
 
     public static SimpleExcelWriter create(InputStream template) {
+        return new SimpleExcelWriter(AnnotationExcelWriter.create(), template);
+    }
+
+    public static SimpleExcelWriter create(Workbook template) {
         return new SimpleExcelWriter(AnnotationExcelWriter.create(), template);
     }
 
@@ -50,26 +59,16 @@ public class SimpleExcelWriter {
         this.write(output);
     }
 
-    public void writeTable(List<?> data, int[] limit, OutputStream output) {
-        setTableLimit(data.get(0).getClass(), limit);
-        this.writeTable(data, output);
-    }
-
     public void writePoints(Object data, OutputStream output) {
         this.excelWriter.addPoints(data.getClass(), JSON.parseObject(JSON.toJSONString(data)));
         this.write(output);
     }
 
-    private void setTableLimit(Class<?> type, int[] limit) {
-        Preconditions.checkState(Objects.nonNull(limit) && limit.length >= 1);
-        if (limit.length == 1) {
-            this.excelWriter.setTableLimit(type, limit[0]);
+    private void write(OutputStream output) {
+        if (Workbook.class.isAssignableFrom(this.template.getClass())) {
+            this.excelWriter.write((Workbook) this.template, output);
             return;
         }
-        this.excelWriter.setTableLimit(type, limit[0], limit[1]);
-    }
-
-    private void write(OutputStream output) {
         if (InputStream.class.isAssignableFrom(this.template.getClass())) {
             this.excelWriter.write((InputStream) this.template, output);
             return;

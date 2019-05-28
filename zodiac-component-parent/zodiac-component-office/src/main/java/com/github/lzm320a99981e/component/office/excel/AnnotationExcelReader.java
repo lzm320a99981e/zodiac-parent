@@ -3,6 +3,7 @@ package com.github.lzm320a99981e.component.office.excel;
 import com.github.lzm320a99981e.component.office.excel.interceptor.ExcelReadInterceptor;
 import com.github.lzm320a99981e.component.office.excel.metadata.Table;
 import com.google.common.base.Preconditions;
+import org.apache.poi.ss.usermodel.Workbook;
 
 import java.io.File;
 import java.io.InputStream;
@@ -52,16 +53,7 @@ public class AnnotationExcelReader extends AnnotationExcelSettingAdapter {
         return this.excelReader.read(excel);
     }
 
-    private Table parseTableType(Class<?> type) {
-        final Table table = ExcelHelper.classToTable(type);
-        if (!this.tableLimitMap.containsKey(type)) {
-            return table;
-        }
-        final int[] limit = this.tableLimitMap.get(type);
-        table.setStartRowNumber(limit[0]);
-        if (limit.length == 2) {
-            table.setSize(limit[1]);
-        }
-        return table;
+    public Map<String, Object> read(Workbook excel) {
+        return this.excelReader.read(excel);
     }
 }

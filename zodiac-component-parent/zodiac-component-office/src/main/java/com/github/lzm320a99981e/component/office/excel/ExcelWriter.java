@@ -148,36 +148,46 @@ public class ExcelWriter {
      * @param template
      * @return
      */
-    public void write(InputStream template, OutputStream output) {
+    public void write(final Workbook template, final OutputStream output) {
         Preconditions.checkNotNull(template);
         Preconditions.checkNotNull(output);
-
+        // 校验配置信息
         if (tableDataMap.isEmpty() && pointDataMap.isEmpty()) {
             throw new RuntimeException("未添加任何元数据，请添加元数据后操作");
         }
 
         try {
-            // 创建工作本
-            Workbook workbook = WorkbookFactory.create(template);
-
             // 写入单元格数据
-            this.pointDataMap.values().forEach(item -> writePoint(workbook, item));
+            this.pointDataMap.values().forEach(item -> writePoint(template, item));
 
             // 写入表格数据
             this.tableDataMap.values().forEach(item -> {
-                final Sheet sheet = ExcelHelper.findSheet(workbook, item.getTable());
+                final Sheet sheet = ExcelHelper.findSheet(template, item.getTable());
                 // ------------------------ 拦截器 --------------------------
                 final List<Map<String, Object>> filteredData = this.interceptor.beforeWriteTable(sheet, item.getTable(), item.getData());
                 if (Objects.isNull(filteredData)) {
                     return;
                 }
                 item.setData(filteredData);
-                writeTable(workbook, item);
+                writeTable(template, item);
                 this.interceptor.afterWriteTable(sheet, item.getTable(), item.getData());
             });
 
-            // 获取写入后的数据
-            workbook.write(output);
+            // 写入到输出流
+            template.write(output);
+        } catch (Exception e) {
+            this.interceptor.onException(e);
+        }
+    }
+
+    public void write(InputStream template, OutputStream output) {
+        Preconditions.checkNotNull(template);
+        Preconditions.checkNotNull(output);
+        try {
+            // 创建工作本
+            Workbook workbook = WorkbookFactory.create(template);
+            write(workbook, output);
+            // 关闭工作本
             workbook.close();
         } catch (Exception e) {
             this.interceptor.onException(e);

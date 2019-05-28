@@ -160,7 +160,7 @@ public class ExcelTemplateTests {
     public void testSimpleWriter() {
         File template = new File(resources, "test-writer-template.xlsx");
         final List<User> data = new ArrayList<>();
-        for (int i = 0; i < 5; i++) {
+        for (int i = 0; i < 50; i++) {
             final User user = new User();
             user.setName("张三" + i);
             user.setAge("22");

@@ -1,7 +1,7 @@
 package com.github.lzm320a99981e.component.office.excel;
 
 import com.github.lzm320a99981e.component.office.excel.interceptor.ExcelWriteInterceptor;
-import com.github.lzm320a99981e.component.office.excel.metadata.Table;
+import org.apache.poi.ss.usermodel.Workbook;
 
 import java.io.File;
 import java.io.InputStream;
@@ -43,19 +43,6 @@ public class AnnotationExcelWriter extends AnnotationExcelSettingAdapter {
         return this;
     }
 
-    private Table parseTableType(Class<?> type) {
-        final Table table = ExcelHelper.classToTable(type);
-        if (!this.tableLimitMap.containsKey(type)) {
-            return table;
-        }
-        final int[] limit = this.tableLimitMap.get(type);
-        table.setStartRowNumber(limit[0]);
-        if (limit.length == 2) {
-            table.setSize(limit[1]);
-        }
-        return table;
-    }
-
     public AnnotationExcelWriter addPoints(Class<?> type, Map<String, Object> data) {
         this.excelWriter.addPoints(ExcelHelper.classToPoints(type), data);
         return this;
@@ -66,6 +53,10 @@ public class AnnotationExcelWriter extends AnnotationExcelSettingAdapter {
     }
 
     public void write(File template, OutputStream output) {
+        this.excelWriter.write(template, output);
+    }
+
+    public void write(Workbook template, OutputStream output) {
         this.excelWriter.write(template, output);
     }
 }
