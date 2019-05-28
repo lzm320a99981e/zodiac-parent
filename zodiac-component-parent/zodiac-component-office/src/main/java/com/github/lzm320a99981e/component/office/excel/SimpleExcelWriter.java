@@ -8,6 +8,7 @@ import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * 简单 Excel 写入
@@ -49,9 +50,23 @@ public class SimpleExcelWriter {
         this.write(output);
     }
 
+    public void writeTable(List<?> data, int[] limit, OutputStream output) {
+        setTableLimit(data.get(0).getClass(), limit);
+        this.writeTable(data, output);
+    }
+
     public void writePoints(Object data, OutputStream output) {
         this.excelWriter.addPoints(data.getClass(), JSON.parseObject(JSON.toJSONString(data)));
         this.write(output);
+    }
+
+    private void setTableLimit(Class<?> type, int[] limit) {
+        Preconditions.checkState(Objects.nonNull(limit) && limit.length >= 1);
+        if (limit.length == 1) {
+            this.excelWriter.setTableLimit(type, limit[0]);
+            return;
+        }
+        this.excelWriter.setTableLimit(type, limit[0], limit[1]);
     }
 
     private void write(OutputStream output) {

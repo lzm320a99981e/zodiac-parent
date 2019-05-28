@@ -11,7 +11,7 @@ import java.util.Map;
 /**
  * Excel 读取
  */
-public class AnnotationExcelReader {
+public class AnnotationExcelReader extends AnnotationExcelSettingAdapter {
     private ExcelReader excelReader;
 
     private AnnotationExcelReader(ExcelReader excelReader) {
@@ -33,7 +33,7 @@ public class AnnotationExcelReader {
 
     public AnnotationExcelReader addTable(Class<?> type, String dataKey) {
         Preconditions.checkNotNull(dataKey);
-        Table table = ExcelHelper.classToTable(Preconditions.checkNotNull(type));
+        Table table = parseTableType(Preconditions.checkNotNull(type));
         table.setDataKey(dataKey);
         this.excelReader.addTable(table);
         return this;
@@ -52,4 +52,16 @@ public class AnnotationExcelReader {
         return this.excelReader.read(excel);
     }
 
+    private Table parseTableType(Class<?> type) {
+        final Table table = ExcelHelper.classToTable(type);
+        if (!this.tableLimitMap.containsKey(type)) {
+            return table;
+        }
+        final int[] limit = this.tableLimitMap.get(type);
+        table.setStartRowNumber(limit[0]);
+        if (limit.length == 2) {
+            table.setSize(limit[1]);
+        }
+        return table;
+    }
 }
