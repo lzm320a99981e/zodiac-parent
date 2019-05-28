@@ -2,10 +2,7 @@ package com.github.lzm320a99981e.component.office;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.github.lzm320a99981e.component.office.excel.ExcelReader;
-import com.github.lzm320a99981e.component.office.excel.ExcelWriter;
-import com.github.lzm320a99981e.component.office.excel.SimpleExcelReader;
-import com.github.lzm320a99981e.component.office.excel.TableCellMergeStrategy;
+import com.github.lzm320a99981e.component.office.excel.*;
 import com.github.lzm320a99981e.component.office.excel.metadata.ExcelTable;
 import com.github.lzm320a99981e.component.office.excel.metadata.Point;
 import com.github.lzm320a99981e.component.office.excel.metadata.Table;
@@ -14,9 +11,9 @@ import org.junit.Test;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.lang.reflect.Field;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
@@ -119,14 +116,13 @@ public class ExcelTemplateTests {
             data.add(rowData);
         }
         File template = new File(resources, "test-writer-template.xlsx");
-        byte[] bytes = ExcelWriter.create()
-                .addTable(table, data, TableCellMergeStrategy.REPEAT)
-                .addTable(table1, data, TableCellMergeStrategy.REPEAT)
+        ExcelWriter.create()
+                .addTable(table, data, TableCellMergeRangesStrategy.REPEAT_COLUMN)
+                .addTable(table1, data, TableCellMergeRangesStrategy.REPEAT_ROW)
                 .addPoint(Point.create(sheetIndex, 10, 1), "熊逸")
                 .addPoint(Point.create(sheetIndex, 11, 1), "熊逸1234")
                 .addPoint(Point.create(sheetIndex, 12, 1), "234234234324")
-                .write(template);
-        Files.write(Paths.get(template.getParentFile().getAbsolutePath(), "test-reader.xlsx"), bytes);
+                .write(template, new FileOutputStream(new File(resources, "test-reader.xlsx")));
     }
 
     @Test
@@ -158,6 +154,25 @@ public class ExcelTemplateTests {
         File file = new File(resources, "test-reader.xlsx");
         List<User> users = SimpleExcelReader.create().readTable(User.class, file);
         System.out.println(JSON.toJSONString(users, true));
+    }
+
+    @Test
+    public void testSimpleWriter() {
+        File template = new File(resources, "test-writer-template.xlsx");
+        final List<User> data = new ArrayList<>();
+        for (int i = 0; i < 5; i++) {
+            final User user = new User();
+            user.setName("张三" + i);
+            user.setAge("22");
+            user.setSex("男");
+            user.setBirth("1990-01-01");
+            data.add(user);
+        }
+        try {
+            SimpleExcelWriter.create(template).writeTable(data, new FileOutputStream(new File(resources, "test-reader.xlsx")));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
     }
 
     @Test

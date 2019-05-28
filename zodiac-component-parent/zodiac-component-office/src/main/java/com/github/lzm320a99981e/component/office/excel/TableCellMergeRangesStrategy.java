@@ -6,17 +6,41 @@ import lombok.NoArgsConstructor;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 /**
- * 表格单元格合并策略
+ * 表格单元格合并范围策略
  */
-public enum TableCellMergeStrategy {
+public enum TableCellMergeRangesStrategy implements TableCellMergeRangesMatcher {
     /**
-     * 重复合并(
-     * 跨行：[[张三,18],[张三,19],[张三,20]] -> [张三 -> 夸三行, 18],[19],[20]
-     * 跨列：[张三, 李四, 王五, 合计，合计，合计] -> [张三, 李四, 王五, 合计 -> 跨三列]
+     * 合并重复列 -> [张三, 李四, 王五, 合计，合计，合计] -> [张三, 李四, 王五, 合计 -> 跨三列]
      */
-    REPEAT;
+    REPEAT_COLUMN {
+        @Override
+        public List<TableCellMergeRange> match(Table table, List<Map<String, Object>> data) {
+            return matchRepeat(table, data).stream().filter(item -> item.getStartRowDataIndex().equals(item.getEndRowDataIndex())).collect(Collectors.toList());
+        }
+    },
+
+    /**
+     * 合并重复行 -> [[张三,18],[张三,19],[张三,20]] -> [张三 -> 夸三行, 18],[19],[20]
+     */
+    REPEAT_ROW {
+        @Override
+        public List<TableCellMergeRange> match(Table table, List<Map<String, Object>> data) {
+            return matchRepeat(table, data).stream().filter(item -> item.getStartColumnDataKey().equals(item.getEndColumnDataKey())).collect(Collectors.toList());
+        }
+    },
+
+    /**
+     * 合并重复行和合并重复列
+     */
+    REPEAT_ROW_COLUMN {
+        @Override
+        public List<TableCellMergeRange> match(Table table, List<Map<String, Object>> data) {
+            return matchRepeat(table, data);
+        }
+    };
 
     /**
      * 查找合并单元格区域
@@ -24,7 +48,7 @@ public enum TableCellMergeStrategy {
      * @param data
      * @return
      */
-    public List<TableCellMergeRange> findCellMergeRanges(Table table, List<Map<String, Object>> data) {
+    protected List<TableCellMergeRange> matchRepeat(Table table, List<Map<String, Object>> data) {
         List<TableCellMergeRange> tableCellMergeRanges = new ArrayList<>();
         Map<String, RowspanCounter> rowspanCounterMap = new HashMap<>();
 

@@ -9,7 +9,9 @@ import lombok.Data;
 public class User {
     @ExcelColumn
     private String name;
-    @ExcelColumn(index = 2)
+    @ExcelColumn
+    private String sex;
+    @ExcelColumn
     private String age;
     @ExcelColumn
     private String birth;

@@ -13,10 +13,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -61,6 +61,17 @@ public class ExcelWriter {
     }
 
     /**
+     * 设置拦截器
+     *
+     * @param interceptor
+     * @return
+     */
+    public ExcelWriter setInterceptor(ExcelWriteInterceptor interceptor) {
+        this.interceptor = interceptor;
+        return this;
+    }
+
+    /**
      * 添加表格配置
      *
      * @param table
@@ -78,13 +89,13 @@ public class ExcelWriter {
      *
      * @param table
      * @param data
-     * @param strategy
+     * @param matcher
      * @return
      */
-    public ExcelWriter addTable(Table table, List<Map<String, Object>> data, TableCellMergeStrategy strategy) {
-        Preconditions.checkNotNull(strategy);
+    public ExcelWriter addTable(Table table, List<Map<String, Object>> data, TableCellMergeRangesMatcher matcher) {
+        Preconditions.checkNotNull(matcher);
         addTable(table, data);
-        this.tableCellMergeRangesMap.put(table, strategy.findCellMergeRanges(table, data));
+        this.tableCellMergeRangesMap.put(table, matcher.match(table, data));
         return this;
     }
 
@@ -137,10 +148,14 @@ public class ExcelWriter {
      * @param template
      * @return
      */
-    public byte[] write(InputStream template) {
+    public void write(InputStream template, OutputStream output) {
+        Preconditions.checkNotNull(template);
+        Preconditions.checkNotNull(output);
+
         if (tableDataMap.isEmpty() && pointDataMap.isEmpty()) {
             throw new RuntimeException("未添加任何元数据，请添加元数据后操作");
         }
+
         try {
             // 创建工作本
             Workbook workbook = WorkbookFactory.create(template);
@@ -162,14 +177,11 @@ public class ExcelWriter {
             });
 
             // 获取写入后的数据
-            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-            workbook.write(outputStream);
+            workbook.write(output);
             workbook.close();
-            return outputStream.toByteArray();
         } catch (Exception e) {
             this.interceptor.onException(e);
         }
-        return null;
     }
 
     /**
@@ -178,15 +190,12 @@ public class ExcelWriter {
      * @param template
      * @return
      */
-    public byte[] write(File template) {
-        try (FileInputStream inputStream = new FileInputStream(template)) {
-            byte[] data = write(inputStream);
-            inputStream.close();
-            return data;
+    public void write(File template, OutputStream output) {
+        try {
+            write(new FileInputStream(template), output);
         } catch (Exception e) {
             this.interceptor.onException(e);
         }
-        return null;
     }
 
     /**
