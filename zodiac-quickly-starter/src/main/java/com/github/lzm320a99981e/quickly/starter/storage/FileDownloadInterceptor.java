@@ -7,7 +7,7 @@ import java.util.Collection;
 import java.util.List;
 
 /**
- * 文件上传拦截器
+ * 文件下载拦截器
  */
 public interface FileDownloadInterceptor {
     /**

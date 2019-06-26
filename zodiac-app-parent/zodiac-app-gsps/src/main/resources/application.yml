@@ -12,6 +12,10 @@ spring:
   messages:
     basename: i18n/messages,i18n/validation/messages
     encoding: UTF-8
+  servlet:
+    multipart:
+      max-file-size: 500MB
+      max-request-size: 500MB
 # log
 logging:
   root: info

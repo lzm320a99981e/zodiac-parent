@@ -14,6 +14,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.lang.reflect.Field;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
@@ -234,5 +235,50 @@ public class ExcelTemplateTests {
     public void testExcelAnnotation() {
         final ExcelTable table = TableAnnoEntity.class.getAnnotation(ExcelTable.class);
         System.out.println(table.limit()[0]);
+    }
+
+    @Test
+    public void testPicture() throws Exception {
+        File excel = new File(resources, "test-image-read.xlsx");
+        final Workbook workbook = WorkbookFactory.create(excel);
+
+        // images
+        final byte[] images001 = Files.readAllBytes(new File(resources, "images001.jpeg").toPath());
+        final int pictureIndex = workbook.addPicture(images001, Workbook.PICTURE_TYPE_JPEG);
+
+        final CreationHelper creationHelper = workbook.getCreationHelper();
+
+        final Sheet sheet = workbook.getSheetAt(0);
+        final Drawing<?> drawingPatriarch = sheet.createDrawingPatriarch();
+        // picture position
+        final Row row = sheet.getRow(0);
+        final Cell cell = row.createCell(0);
+
+        final ClientAnchor clientAnchor = creationHelper.createClientAnchor();
+        clientAnchor.setCol1(cell.getColumnIndex());
+        clientAnchor.setRow1(row.getRowNum());
+        clientAnchor.setCol2(cell.getColumnIndex());
+        clientAnchor.setRow2(row.getRowNum());
+
+        final short rowHeight = row.getHeight();
+        final int columnWidth = sheet.getColumnWidth(cell.getColumnIndex());
+        clientAnchor.setDx1(0);
+        clientAnchor.setDy1(0);
+        clientAnchor.setDx2(rowHeight);
+        clientAnchor.setDy2(columnWidth);
+
+
+//        clientAnchor.setDx1();
+//        clientAnchor.setDy1();
+
+        // create picture
+        final Picture picture = drawingPatriarch.createPicture(clientAnchor, pictureIndex);
+        // resize
+//        picture.resize();
+
+        // output
+        File output = new File(resources, "test-image-write.xlsx");
+        workbook.write(new FileOutputStream(output));
+        workbook.close();
     }
 }

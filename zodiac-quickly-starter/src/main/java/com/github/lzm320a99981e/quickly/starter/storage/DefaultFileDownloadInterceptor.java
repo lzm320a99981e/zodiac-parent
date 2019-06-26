@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * 文件上传拦截器
+ * 文件下载拦截器
  */
 public class DefaultFileDownloadInterceptor implements FileDownloadInterceptor {
     @Override
